@@ -5,11 +5,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.sand.sqlbuild</groupId>
 	<artifactId>sqlbuild</artifactId>
+	<packaging>pom</packaging>
 	<version>0.1.0</version>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
-	</properties>
+
+	<modules>
+		<module>builder</module>
+		<module>dao-spring-jdbc</module>
+	</modules>
 
 	<repositories>
 		<repository>
@@ -39,6 +41,20 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+
+	<distributionManagement>
+		<repository>
+			<id>sand-releases</id>
+			<name>sand of releases</name>
+			<url>http://172.28.250.240:8084/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>sand-snapshots</id>
+			<name>sand of snapshots</name>
+			<url>http://172.28.250.240:8084/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
 	<profiles>
 		<profile>
 			<id>sand</id>
@@ -63,14 +79,43 @@
 		</profile>
 	</profiles>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<junit.version>4.8.2</junit.version>
+		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
+		<spring.version>3.2.13.RELEASE</spring.version>
+		<slf4j.api.version>1.7.12</slf4j.api.version>
+		<logback.version>1.1.3</logback.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<build>
 		<plugins>

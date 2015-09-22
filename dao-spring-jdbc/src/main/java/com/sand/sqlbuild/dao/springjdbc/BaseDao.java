@@ -1,0 +1,161 @@
+package com.sand.sqlbuild.dao.springjdbc;
+
+import com.sand.sqlbuild.builder.*;
+import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.List;
+
+/**
+ * @author : sun.mt
+ * @create : 2015/9/22 17:48
+ * @since : 0.1.1
+ */
+public interface BaseDao {
+
+	/**
+	 * 获取spring jdbc template
+	 * @return
+	 */
+	JdbcTemplate getJdbcTemplate();
+
+	/**
+	 * 插入
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @return 受影响数
+	 */
+	int insert(BuildResult buildResult);
+
+	/**
+	 * 修改
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @return 受影响数
+	 */
+	int update(BuildResult buildResult);
+
+	/**
+	 * 删除
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @return 受影响数
+	 */
+	int delete(BuildResult buildResult);
+
+	/**
+	 * 查询单条，并映射成PO对象
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @param po 集成AbstractPo的Java对象
+	 * @return
+	 */
+	<R extends AbstractPo> R queryForPo (BuildResult buildResult, R po);
+
+	/**
+	 * 查询单条记录的第一个列，并映射成Java对象
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @param clazz 对象class
+	 * @return
+	 */
+	<R> R queryFirstColumnForObject (BuildResult buildResult, Class<R> clazz);
+
+	/**
+	 * 查询多条，并映射成List Java对象集合
+	 *
+	 * @param buildResult Builder构建后的结果对象
+	 * @param clazz
+	 * @return
+	 */
+	<R extends AbstractPo> List<R> queryForPoList (BuildResult buildResult, Class<R> clazz);
+
+
+	/**
+	 * 插入
+	 *
+	 * @param setters 字段+值设置器组数
+	 * @param clazz
+	 * @return 受影响数
+	 */
+	<R extends AbstractPo> int insert(Setter<?>[] setters, Class<R> clazz);
+
+	/**
+	 * 更新
+	 *
+	 * @param setters 字段+值设置器组数
+	 * @param filters 字段+值过滤器组数
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return 受影响数
+	 */
+	<R extends AbstractPo> int update(Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz);
+
+	/**
+	 * 更新
+	 *
+	 * @param setters 字段+值设置器组数
+	 * @param filterBuilder 字段+值过滤器的构建对象
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return 受影响数
+	 */
+	<R extends AbstractPo> int update(Setter<?>[] setters, FilterBuilder filterBuilder, Class<R> clazz);
+
+	/**
+	 * 删除
+	 *
+	 * @param filters 字段+值过滤器组数
+	 * @param clazz  表结构的Java对象映射类型（Class）
+	 * @return 受影响数
+	 */
+	<R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz);
+
+	/**
+	 * 删除
+	 *
+	 * @param filterBuilder 字段+值过滤器的构建对象
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return 受影响数
+	 */
+	<R extends AbstractPo> int delete(FilterBuilder filterBuilder, Class<R> clazz);
+
+	/**
+	 * 查询单条，并映射成Java对象
+	 *
+	 * @param fields 查询字段数组
+	 * @param filters 字段+值过滤器组数
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return Java对象
+	 */
+	<R extends AbstractPo> R queryForPo (Field<?>[] fields, Filter<?>[] filters, Class<R> clazz);
+
+	/**
+	 * 查询多条，并映射成List Java对象集合
+	 *
+	 * @param fields 查询字段数组
+	 * @param filterBuilder 字段+值过滤器的构建对象
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return List Java对象集合
+	 */
+	<R extends AbstractPo> R queryForPo (Field<?>[] fields, FilterBuilder filterBuilder, Class<R> clazz);
+
+
+	/**
+	 * 查询多条，并映射成List Java对象集合
+	 *
+	 * @param fields 查询字段数组
+	 * @param filters 字段+值过滤器组数
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return List Java对象集合
+	 */
+	<R extends AbstractPo> List<R> queryForPoList (Field<?>[] fields, Filter<?>[] filters, Class<R> clazz);
+
+	/**
+	 * 查询多条，并映射成List Java对象集合
+	 *
+	 * @param fields 查询字段数组
+	 * @param filterBuilder 字段+值过滤器的构建对象
+	 * @param clazz 表结构的Java对象映射类型（Class）
+	 * @return List Java对象集合
+	 */
+	<R extends AbstractPo> List<R> queryForPoList (Field<?>[] fields, FilterBuilder filterBuilder, Class<R> clazz);
+
+}
