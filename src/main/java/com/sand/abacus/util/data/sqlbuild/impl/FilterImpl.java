@@ -21,8 +21,8 @@ import com.sand.abacus.util.data.sqlbuild.Filter;
  * @ClassName ：FilterImpl
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年5月6日 下午5:05:12
- * @version 1.0.0
+ * @date : 2015年5月6日 下午5:05:12
+ * @since 1.0.0
  *
  */
 public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
@@ -56,7 +56,6 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getOperator()
 	 */
-	@Override
 	public String getOperator() {
 		return operator;
 	}
@@ -64,7 +63,6 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getValues()
 	 */
-	@Override
 	public T[] getValues() {
 		return values;
 	}
@@ -72,7 +70,6 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getType()
 	 */
-	@Override
 	public Type getType() {
 		return type;
 	}

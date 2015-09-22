@@ -21,8 +21,8 @@ import com.sand.abacus.util.data.sqlbuild.Setter;
  * @ClassName ：SetterImpl
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年5月6日 下午7:06:26
- * @version 1.0.0
+ * @date : 2015年5月6日 下午7:06:26
+ * @since 1.0.0
  *
  */
 public class SetterImpl <T> implements Setter<T> {
@@ -47,7 +47,6 @@ public class SetterImpl <T> implements Setter<T> {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Setter#getField()
 	 */
-	@Override
 	public Field<T> getField() {
 		return field;
 	}
@@ -55,17 +54,14 @@ public class SetterImpl <T> implements Setter<T> {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Setter#getValue()
 	 */
-	@Override
 	public T getValue() {
 		return value;
 	}
 
-	@Override
 	public Field<T> getFieldValue() {
 		return fieldValue;
 	}
 
-	@Override
 	public boolean isFieldValue() {
 		return fieldValue != null;
 	}

@@ -20,8 +20,8 @@ import com.sand.abacus.util.data.sqlbuild.PagingBuilder;
  * @ClassName ：PagingBuilderFactory
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年6月2日 下午5:20:21
- * @version 1.0.0
+ * @date : 2015年6月2日 下午5:20:21
+ * @since 1.0.0
  *
  */
 public class PagingBuilderFactory {

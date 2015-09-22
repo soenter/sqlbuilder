@@ -22,8 +22,8 @@ import com.sand.abacus.util.data.sqlbuild.FilterBuildResult;
  * @ClassName ：FilterBuildResultImpl
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年5月8日 下午1:01:12
- * @version 1.0.0
+ * @date : 2015年5月8日 下午1:01:12
+ * @since 1.0.0
  *
  */
 public class FilterBuildResultImpl implements FilterBuildResult {
@@ -41,7 +41,6 @@ public class FilterBuildResultImpl implements FilterBuildResult {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.FilterBuilderResult#getSql()
 	 */
-	@Override
 	public String getSql() {
 		return builder.toString();
 	}
@@ -49,7 +48,6 @@ public class FilterBuildResultImpl implements FilterBuildResult {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.FilterBuilderResult#getParameters()
 	 */
-	@Override
 	public List<Object> getParameters() {
 		return params;
 	}

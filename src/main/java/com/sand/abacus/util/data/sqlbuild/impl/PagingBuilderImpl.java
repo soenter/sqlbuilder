@@ -31,8 +31,8 @@ import com.sand.abacus.util.data.sqlbuild.Table;
  * @ClassName ：PagingBuilderImpl
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年6月2日 下午3:53:10
- * @version 1.0.0
+ * @date : 2015年6月2日 下午3:53:10
+ * @since 1.0.0
  *
  */
 public class PagingBuilderImpl implements PagingBuilder {
@@ -71,7 +71,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#select(com.sand.abacus.util.data.sqlbuild.Field[])
 	 */
-	@Override
 	public PagingBuilder select(Field<?>... fields) {
 		selectBuilder.select(fields);
 		
@@ -81,7 +80,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#from(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
-	@Override
 	public PagingBuilder from(Class<? extends Table> clazz, Field<?> pk) {
 		fromBuilder.from(clazz);
 		fromPk = pk;
@@ -91,7 +89,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#innerJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
-	@Override
 	public PagingBuilder innerJoin(Class<? extends Table> clazz) {
 		fromBuilder.innerJoin(clazz);
 		return this;
@@ -100,7 +97,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#leftJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
-	@Override
 	public PagingBuilder leftJoin(Class<? extends Table> clazz) {
 		fromBuilder.leftJoin(clazz);
 		return this;
@@ -109,7 +105,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#rightJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
-	@Override
 	public PagingBuilder rightJoin(Class<? extends Table> clazz) {
 		fromBuilder.rightJoin(clazz);
 		return this;
@@ -118,7 +113,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#on(com.sand.abacus.util.data.sqlbuild.Field)
 	 */
-	@Override
 	public PagingBuilder on(Filter<?> filter) {
 		fromBuilder.on(filter);
 		return this;
@@ -127,7 +121,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#where(com.sand.abacus.util.data.sqlbuild.Filter[])
 	 */
-	@Override
 	public PagingBuilder where(Filter<?>... filters) {
 		BuilderUtils.joinFiltersByAnd(whereBuilder, filters);
 		return this;
@@ -136,7 +129,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#where(com.sand.abacus.util.data.sqlbuild.FilterBuilder)
 	 */
-	@Override
 	public PagingBuilder where(FilterBuilder filterBuilder) {
 		whereBuilder.where(filterBuilder);
 		return this;
@@ -145,7 +137,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#and(com.sand.abacus.util.data.sqlbuild.Filter)
 	 */
-	@Override
 	public PagingBuilder and(Filter<?> filter) {
 		whereBuilder.and(filter);
 		return this;
@@ -154,7 +145,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#or(com.sand.abacus.util.data.sqlbuild.Filter)
 	 */
-	@Override
 	public PagingBuilder or(Filter<?> filter) {
 		whereBuilder.or(filter);
 		return this;
@@ -163,7 +153,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#orderBy(com.sand.abacus.util.data.sqlbuild.Order)
 	 */
-	@Override
 	public PagingBuilder orderBy(Order... orders) {
 		orderBuilder.orderBy(orders);
 		return this;
@@ -172,7 +161,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingCount()
 	 */
-	@Override
 	public BuildResult buildPagingCount() {
 		//构建结果
 		buildResult();
@@ -194,7 +182,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingList()
 	 */
-	@Override
 	public BuildResult buildPagingList(int pageStart, int pageEnd, int pageLimit) {
 		if(pageStart < 1){
 			throw new IllegalArgumentException("分页开始数不能小于1");

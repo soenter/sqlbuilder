@@ -1,58 +1,43 @@
-/**
- * Copyright : http://www.sandpay.com.cn/ , 2003-2014
- * Project : abacus-dao-base
- * $Id$
- * $Revision$
- * Last Changed by sun.mt at 2015年5月6日 下午12:28:52
- * $URL$
- * 
- * Change Log
- * Author      Change Date    Comments
- *-------------------------------------------------------------
- * sun.mt         2015年5月6日        Initailized
- */
 package com.sand.abacus.util.data.sqlbuild;
 
 
 
 /**
  *
- * @ClassName ：Builder
- * @Description : 
  * @author : sun.mt
- * @Date : 2015年5月6日 下午12:28:52
- * @version 1.0.0
+ * @date : 2015年5月6日 下午12:28:52
+ * @since 1.0.0
  *
  */
 public interface Builder {
 	
 	/*------------------------------------查询（select）------------------------------------*/
 	
-	public Builder select();
+	Builder select();
 	
-	public Builder select(Field<?>... fields);
+	Builder select(Field<?>... fields);
 	
-	public Builder distinct();
+	Builder distinct();
 
-	public Builder fields(Field<?>... fields);
+	Builder fields(Field<?>... fields);
 	
-	//public Builder all();
+	//Builder all();
 
 	/*------------------------------------插入（insert）------------------------------------*/
 
-	public Builder insert(Class<? extends Table> clazz, Field<?>... fields);
+	Builder insert(Class<? extends Table> clazz, Field<?>... fields);
 	
-	public Builder values(Object... values);
+	Builder values(Object... values);
 
 	/*------------------------------------更新（update）------------------------------------*/
 
-	public Builder update(Class<? extends Table> clazz);
+	Builder update(Class<? extends Table> clazz);
 
-	public Builder set(Setter<?>... setters);
+	Builder set(Setter<?>... setters);
 
 	/*------------------------------------删除（update）------------------------------------*/
 
-	public Builder delete();
+	Builder delete();
 
 	/*------------------------------------表连接（join）------------------------------------*/
 
@@ -62,7 +47,7 @@ public interface Builder {
 	 * @param clazz
 	 * @return
 	 */
-	public Builder join(Class<? extends Table> clazz);
+	Builder join(Class<? extends Table> clazz);
 	
 	/**
 	 * 内连接（inner join）
@@ -70,40 +55,48 @@ public interface Builder {
 	 * @param clazz
 	 * @return
 	 */
-	public Builder innerJoin(Class<? extends Table> clazz);
-	public Builder leftJoin(Class<? extends Table> clazz);
-	public Builder rightJoin(Class<? extends Table> clazz);
-	public Builder on(Filter<?> filter);
+	Builder innerJoin(Class<? extends Table> clazz);
+	Builder leftJoin(Class<? extends Table> clazz);
+	Builder rightJoin(Class<? extends Table> clazz);
+	Builder on(Filter<?> filter);
 
 	/*------------------------------------通用（common）------------------------------------*/
 	
-	public Builder from(Class<? extends Table> clazz);
+	Builder from(Class<? extends Table> clazz);
 
-	/**
-	 * 多表查询（select * from table_1, table_2）
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	public Builder from(Class<? extends Table>[] clazzs);
+    /**
+     * 多表查询（select * from table_1, table_2）
+     *
+     * @param first
+     * @param clazzs
+     * @return
+     */
+    Builder from(Class<? extends Table> first,Class<? extends Table>... clazzs);
+
+    /**
+     *
+     * @param clazzs
+     * @return
+     */
+    Builder from(Class<? extends Table>[] clazzs);
+
+	Builder where(Filter<?> filter);
+
+	Builder where(FilterBuilder filterBuilder);
 	
-	public Builder where(Filter<?> filter);
+	Builder and();
 	
-	public Builder where(FilterBuilder filterBuilder);
+	Builder and(Filter<?> filter);
 	
-	public Builder and();
+	Builder and(FilterBuilder filterBuilder);
 	
-	public Builder and(Filter<?> filter);
+	Builder or(Filter<?> filter);
 	
-	public Builder and(FilterBuilder filterBuilder);
+	Builder or(FilterBuilder filterBuilder);
 	
-	public Builder or(Filter<?> filter);
+	Builder orderBy(Order... orders);
 	
-	public Builder or(FilterBuilder filterBuilder);
-	
-	public Builder orderBy(Order... orders);
-	
-	public Builder groupBy(Field<?>... fields);
+	Builder groupBy(Field<?>... fields);
 
 	/**
 	 * Mysql 语法
@@ -111,7 +104,7 @@ public interface Builder {
 	 * @param limit
 	 * @return
 	 */
-	public Builder limit(int limit);
+	Builder limit(int limit);
 	
 	/**
 	 * SQL Server 语法
@@ -119,7 +112,7 @@ public interface Builder {
 	 * @param top
 	 * @return
 	 */
-	public Builder top(int top);
+	Builder top(int top);
 	
 	/**
 	 * Oracle 语法
@@ -127,7 +120,7 @@ public interface Builder {
 	 * @param rownum
 	 * @return
 	 */
-	public Builder rownum(int rownum);
+	Builder rownum(int rownum);
 	
 
 	/**
@@ -136,7 +129,7 @@ public interface Builder {
 	 * @param funName
 	 * @return
 	 */
-	public Builder func(String funName);
+	Builder func(String funName);
 
 	/**
 	 * 左边括号"("
@@ -144,7 +137,7 @@ public interface Builder {
 	 * <br>ls = left sign
 	 * @return
 	 */
-	public Builder ls();
+	Builder ls();
 	
 	/**
 	 * 函数参数
@@ -152,23 +145,23 @@ public interface Builder {
 	 * @param fields
 	 * @return
 	 */
-	public Builder args(Field<?>... fields);
+	Builder args(Field<?>... fields);
 	
 	/**
 	 * 右边括号")"
 	 * 
-	 * <br>rs = left sign
+	 * <br>rs = right sign
 	 * 
 	 * @return
 	 */
-	public Builder rs();
+	Builder rs();
 	
 	/**
 	 * 逗号 “,”
 	 * 
 	 * @return
 	 */
-	public Builder dot();
+	Builder dot();
 	
 	/**
 	 * 别名
@@ -176,11 +169,14 @@ public interface Builder {
 	 * @param field
 	 * @return
 	 */
-	public Builder as(Field<?> field);
-	
-	public Builder as(Field<?> field, Class<?> javaType);
+	Builder as(Field<?> field);
 
-	public Builder forUpdate();
+
+    Builder as(String aliasName, Class<?> javaType);
+	
+	Builder as(Field<?> field, Class<?> javaType);
+
+	Builder forUpdate();
 	
 	/**
 	 * wait 子句指定等待其他用户释放锁的秒数，防止无限期的等待
@@ -190,17 +186,22 @@ public interface Builder {
 	 * @param second
 	 * @return
 	 */
-	public Builder waits(int second);
+	Builder waits(int second);
 	
-	public Builder union();
+	Builder union();
 
-	public Builder unionAll();
+	Builder unionAll();
 
 	/**
 	 * 构建返回结果并重新初始化builder
 	 * 
 	 * @return
 	 */
-	public BuildResult build();
-	
+	BuildResult build();
+
+
+	/**
+	 * 从新初始化
+	 */
+	Builder reinit();
 }

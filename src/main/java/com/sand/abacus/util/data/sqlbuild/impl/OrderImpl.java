@@ -21,8 +21,8 @@ import com.sand.abacus.util.data.sqlbuild.Order;
  * @ClassName ：OrderImpl
  * @Description : 
  * @author : sun.mt
- * @Date : 2015年5月8日 下午3:42:14
- * @version 1.0.0
+ * @date : 2015年5月8日 下午3:42:14
+ * @since 1.0.0
  *
  */
 public class OrderImpl implements Order {
@@ -40,7 +40,6 @@ public class OrderImpl implements Order {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Order#getField()
 	 */
-	@Override
 	public Field<?> getField() {
 		return field;
 	}
@@ -48,7 +47,6 @@ public class OrderImpl implements Order {
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Order#getType()
 	 */
-	@Override
 	public Type getType() {
 		return type;
 	}
