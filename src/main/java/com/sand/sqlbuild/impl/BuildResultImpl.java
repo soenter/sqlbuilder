@@ -1,9 +1,9 @@
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
 import java.util.List;
 
-import com.sand.abacus.util.data.sqlbuild.BuildResult;
-import com.sand.abacus.util.data.sqlbuild.Field;
+import com.sand.sqlbuild.BuildResult;
+import com.sand.sqlbuild.Field;
 
 /**
  *

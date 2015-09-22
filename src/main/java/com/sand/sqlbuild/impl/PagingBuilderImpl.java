@@ -11,20 +11,20 @@
  *-------------------------------------------------------------
  * sun.mt         2015年6月2日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sand.abacus.util.data.sqlbuild.BuildResult;
-import com.sand.abacus.util.data.sqlbuild.Builder;
-import com.sand.abacus.util.data.sqlbuild.BuilderUtils;
-import com.sand.abacus.util.data.sqlbuild.Field;
-import com.sand.abacus.util.data.sqlbuild.Filter;
-import com.sand.abacus.util.data.sqlbuild.FilterBuilder;
-import com.sand.abacus.util.data.sqlbuild.Order;
-import com.sand.abacus.util.data.sqlbuild.PagingBuilder;
-import com.sand.abacus.util.data.sqlbuild.Table;
+import com.sand.sqlbuild.BuildResult;
+import com.sand.sqlbuild.Builder;
+import com.sand.sqlbuild.BuilderUtils;
+import com.sand.sqlbuild.Field;
+import com.sand.sqlbuild.Filter;
+import com.sand.sqlbuild.FilterBuilder;
+import com.sand.sqlbuild.Order;
+import com.sand.sqlbuild.PagingBuilder;
+import com.sand.sqlbuild.Table;
 
 /**
  *

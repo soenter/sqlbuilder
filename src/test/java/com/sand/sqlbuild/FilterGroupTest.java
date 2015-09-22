@@ -11,11 +11,11 @@
  *-------------------------------------------------------------
  * sun.mt         2015年5月8日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild;
+package com.sand.sqlbuild;
 
 import org.junit.Test;
 
-import com.sand.abacus.util.data.sqlbuild.impl.BuilderFactory;
+import com.sand.sqlbuild.impl.BuilderFactory;
 
 /**
  *

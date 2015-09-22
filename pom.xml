@@ -3,13 +3,66 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.sand.abacus</groupId>
-	<artifactId>abacus-util-data-sqlbuild</artifactId>
-	<name>abacus-util-data-sqlbuild</name>
-	<version>0.1.1</version>
+	<groupId>com.sand.sqlbuild</groupId>
+	<artifactId>sqlbuild</artifactId>
+	<version>0.1.0</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.plugin.version>2.5.1</maven.compiler.plugin.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>repository</id>
+			<name>repository</name>
+			<url>${maven.repository.url}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>repository</id>
+			<name>repository</name>
+			<url>${maven.repository.url}</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>sand</id>
+			<properties>
+				<maven.repository.url>http://172.28.250.240:8084/nexus/content/groups/public/</maven.repository.url>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+		<profile>
+			<id>china</id>
+			<properties>
+				<maven.repository.url>http://maven.oschina.net/content/groups/public/</maven.repository.url>
+			</properties>
+		</profile>
+		<profile>
+			<id>other</id>
+			<properties>
+				<maven.repository.url>http://repo.maven.apache.org/maven2</maven.repository.url>
+			</properties>
+		</profile>
+	</profiles>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -18,4 +71,19 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven.compiler.plugin.version}</version>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

@@ -11,7 +11,7 @@
  *-------------------------------------------------------------
  * sun.mt         2015年5月6日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild;
+package com.sand.sqlbuild;
 
 /**
  *

@@ -11,9 +11,9 @@
  *-------------------------------------------------------------
  * sun.mt         2015年6月2日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
-import com.sand.abacus.util.data.sqlbuild.PagingBuilder;
+import com.sand.sqlbuild.PagingBuilder;
 
 /**
  *

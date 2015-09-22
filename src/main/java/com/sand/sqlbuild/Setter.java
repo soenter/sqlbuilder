@@ -1,4 +1,4 @@
-package com.sand.abacus.util.data.sqlbuild;
+package com.sand.sqlbuild;
 
 /**
  * insert 或 update 操作设置值

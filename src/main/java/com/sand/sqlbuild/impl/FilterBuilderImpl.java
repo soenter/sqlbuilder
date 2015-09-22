@@ -11,14 +11,14 @@
  *-------------------------------------------------------------
  * sun.mt         2015年5月8日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sand.abacus.util.data.sqlbuild.Filter;
-import com.sand.abacus.util.data.sqlbuild.FilterBuildResult;
-import com.sand.abacus.util.data.sqlbuild.FilterBuilder;
+import com.sand.sqlbuild.Filter;
+import com.sand.sqlbuild.FilterBuildResult;
+import com.sand.sqlbuild.FilterBuilder;
 
 /**
  *

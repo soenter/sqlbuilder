@@ -1,12 +1,12 @@
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
 import java.util.List;
 
-import com.sand.abacus.util.data.sqlbuild.Field;
-import com.sand.abacus.util.data.sqlbuild.Filter;
-import com.sand.abacus.util.data.sqlbuild.Order;
-import com.sand.abacus.util.data.sqlbuild.Order.Type;
-import com.sand.abacus.util.data.sqlbuild.Setter;
+import com.sand.sqlbuild.Field;
+import com.sand.sqlbuild.Filter;
+import com.sand.sqlbuild.Order;
+import com.sand.sqlbuild.Order.Type;
+import com.sand.sqlbuild.Setter;
 
 /**
  *
@@ -15,7 +15,7 @@ import com.sand.abacus.util.data.sqlbuild.Setter;
  * @since 1.0.0
  *
  */
-public class FieldImpl<T> implements Field<T>{
+public class FieldImpl<T> implements Field<T> {
 
 	private final String tableTame;
 	private final String fieldName;
@@ -144,21 +144,21 @@ public class FieldImpl<T> implements Field<T>{
 	 */
 	@SuppressWarnings("unchecked")
 	public Filter<T> in(List<T> list) {
-		return new FilterImpl<T>(this, "in", (T[])list.toArray(), com.sand.abacus.util.data.sqlbuild.Filter.Type.MULTI);
+		return new FilterImpl<T>(this, "in", (T[])list.toArray(), Filter.Type.MULTI);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Field#in(java.lang.Object[])
 	 */
 	public Filter<T> in(T[] values) {
-		return new FilterImpl<T>(this, "in", values, com.sand.abacus.util.data.sqlbuild.Filter.Type.MULTI);
+		return new FilterImpl<T>(this, "in", values, Filter.Type.MULTI);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Field#nin(java.lang.Object[])
 	 */
 	public Filter<T> nin(T[] values) {
-		return new FilterImpl<T>(this, "not in", values, com.sand.abacus.util.data.sqlbuild.Filter.Type.MULTI);
+		return new FilterImpl<T>(this, "not in", values, Filter.Type.MULTI);
 	}
 
 	/* (non-Javadoc)
@@ -223,7 +223,7 @@ public class FieldImpl<T> implements Field<T>{
 		return new FilterImpl<T>(
 				this, " between ? and ? ", 
 				values, 
-				com.sand.abacus.util.data.sqlbuild.Filter.Type.TWIN);
+				Filter.Type.TWIN);
 	}
 
 	/* (non-Javadoc)

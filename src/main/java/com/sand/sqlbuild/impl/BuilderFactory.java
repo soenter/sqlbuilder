@@ -1,7 +1,7 @@
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
-import com.sand.abacus.util.data.sqlbuild.Builder;
-import com.sand.abacus.util.data.sqlbuild.FilterBuilder;
+import com.sand.sqlbuild.Builder;
+import com.sand.sqlbuild.FilterBuilder;
 
 /**
  *

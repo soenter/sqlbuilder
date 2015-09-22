@@ -1,6 +1,6 @@
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
-import com.sand.abacus.util.data.sqlbuild.*;
+import com.sand.sqlbuild.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public class BuilderImpl implements Builder{
+public class BuilderImpl implements Builder {
 
 	private StringBuilder builder;
 	
@@ -323,14 +323,14 @@ public class BuilderImpl implements Builder{
 				builder.append(" ").append(fieldValue.getOperator()).append(" ");
 			}
 		} else {
-			if(filter.getType() == com.sand.abacus.util.data.sqlbuild.Filter.Type.ONE){
+			if(filter.getType() == Filter.Type.ONE){
 				if(null != filter.getValue()){
 					builder.append(operator).append(" ").append("?");
 					params.add(filter.getValue());
 				} else {
 					builder.append(operator).append(" ");
 				}
-			} else if(filter.getType() == com.sand.abacus.util.data.sqlbuild.Filter.Type.TWIN){
+			} else if(filter.getType() == Filter.Type.TWIN){
 				if(filter.getValues() == null) 
 					throw new IllegalArgumentException("Filter.Type.TWIN时 值对象数组长度必须为2");
 
@@ -339,7 +339,7 @@ public class BuilderImpl implements Builder{
 				params.add(filter.getValues()[0]);
 				params.add(filter.getValues()[1]);
 				
-			} else if(filter.getType() == com.sand.abacus.util.data.sqlbuild.Filter.Type.MULTI){
+			} else if(filter.getType() == Filter.Type.MULTI){
 				if(filter.getValues() == null) 
 					throw new IllegalArgumentException("Filter.Type.MULTI时值对象数组不能为null");
 				

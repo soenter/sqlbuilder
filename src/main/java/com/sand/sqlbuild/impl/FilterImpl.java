@@ -11,10 +11,10 @@
  *-------------------------------------------------------------
  * sun.mt         2015年5月6日        Initailized
  */
-package com.sand.abacus.util.data.sqlbuild.impl;
+package com.sand.sqlbuild.impl;
 
-import com.sand.abacus.util.data.sqlbuild.Field;
-import com.sand.abacus.util.data.sqlbuild.Filter;
+import com.sand.sqlbuild.Field;
+import com.sand.sqlbuild.Filter;
 
 /**
  *
