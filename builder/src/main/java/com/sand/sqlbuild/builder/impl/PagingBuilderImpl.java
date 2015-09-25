@@ -210,7 +210,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 		builder.append("inner join rownum_table on ").append(fromPk.getFullName())
 		.append(" = ").append("rownum_table.").append(fromPk.getName())
 		.append(" and rownum_table.rownum_table_rn between ? and ? ");
-		params.add(pageStart * pageLimit);
+		params.add(pageStart * pageLimit + 1);
 		params.add(pageEnd * pageLimit);
 		
 		//where
