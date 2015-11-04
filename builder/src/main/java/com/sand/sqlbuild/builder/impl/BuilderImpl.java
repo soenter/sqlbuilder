@@ -82,7 +82,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetFields){
 				isFirstSetFields = false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append(field.getFullName());
 			if(!isUnionFlag){
@@ -122,7 +122,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetValues){
 				isFirstSetValues =  false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append("?");
 			valueCount ++;
@@ -155,7 +155,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetSetters){
 				isFirstSetSetters = false;
 			} else {
-				dot();
+				comma();
 			}
 			if(setter.isFieldValue()){
 				
@@ -225,7 +225,7 @@ public class BuilderImpl implements Builder {
         builder.append(" from ").append(table.getName());
         for (Class<? extends Table> class1 : clazzs) {
             //FIXME 获取表名，改为注解形式
-            dot();
+            comma();
             table = newTable(class1);
             builder.append(table.getName());
         }
@@ -241,7 +241,7 @@ public class BuilderImpl implements Builder {
 			if(isFirst){
 				isFirst = false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append(table.getName());
 		}
@@ -349,7 +349,7 @@ public class BuilderImpl implements Builder {
 					if(isFirst){
 						isFirst = false;
 					} else {
-						dot();
+						comma();
 					}
 					builder.append("?");
 					params.add(value);
@@ -373,7 +373,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetOrders){
 				isFirstSetOrders = false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append(order.getField().getFullName()).append(" ");
 			if(order.getType() == Order.Type.asc){
@@ -394,7 +394,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetGroups){
 				isFirstSetGroups = false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append(field.getFullName());
 		}
@@ -437,7 +437,7 @@ public class BuilderImpl implements Builder {
 			if(isFirstSetArgs){
 				isFirstSetArgs = false;
 			} else {
-				dot();
+				comma();
 			}
 			builder.append(field.getFullName());
 		}
@@ -448,9 +448,13 @@ public class BuilderImpl implements Builder {
 		builder.append(")");
 		return this;
 	}
-	
 
-	public Builder dot() {
+	public Builder dot () {
+		builder.append(".");
+		return this;
+	}
+
+	public Builder comma () {
 		builder.append(",");
 		return this;
 	}

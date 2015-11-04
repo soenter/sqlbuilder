@@ -155,13 +155,20 @@ public interface Builder {
 	 * @return
 	 */
 	Builder rs ();
+
+	/**
+	 * 点 “.”
+	 *
+	 * @return
+	 */
+	Builder dot ();
 	
 	/**
 	 * 逗号 “,”
 	 * 
 	 * @return
 	 */
-	Builder dot ();
+	Builder comma ();
 	
 	/**
 	 * 别名

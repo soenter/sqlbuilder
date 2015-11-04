@@ -46,12 +46,12 @@
 		<repository>
 			<id>sand-releases</id>
 			<name>sand of releases</name>
-			<url>http://172.28.250.240:8084/nexus/content/repositories/releases/</url>
+			<url>http://172.28.250.84:8084/nexus/content/repositories/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>sand-snapshots</id>
 			<name>sand of snapshots</name>
-			<url>http://172.28.250.240:8084/nexus/content/repositories/snapshots/</url>
+			<url>http://172.28.250.84:8084/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
 
@@ -59,7 +59,7 @@
 		<profile>
 			<id>sand</id>
 			<properties>
-				<maven.repository.url>http://172.28.250.240:8084/nexus/content/groups/public/</maven.repository.url>
+				<maven.repository.url>http://172.28.250.84:8084/nexus/content/groups/public/</maven.repository.url>
 			</properties>
 			<activation>
 				<activeByDefault>true</activeByDefault>
@@ -129,6 +129,20 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
 </project>
