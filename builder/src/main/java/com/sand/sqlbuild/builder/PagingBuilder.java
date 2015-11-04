@@ -30,7 +30,7 @@ public interface PagingBuilder {
 	PagingBuilder or (Filter<?> filter);
 	
 	PagingBuilder orderBy (Order... orders);
-	
+
 	BuildResult buildPagingCount ();
 	
 	BuildResult buildPagingList (int pageStart, int pageEnd, int pageLimit);

@@ -272,9 +272,13 @@ public class FieldImpl<T> implements Field<T> {
 		return this.operator != null && !"".equals(this.operator);
 	}
 
+	public Field<T> join (Field<?> field, String with) {
+		return null;
+	}
+
 	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+		 * @see java.lang.Object#equals(java.lang.Object)
+		 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals(Object obj) {

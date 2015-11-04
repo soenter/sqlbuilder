@@ -199,7 +199,6 @@ public interface Field<T>{
 	 */
 	Field<T> plus (T value);
 
-	
 	/**
 	 * 减
 	 * this - value
@@ -228,4 +227,11 @@ public interface Field<T>{
 	 * @return
 	 */
 	boolean hasOperator ();
+
+	/**
+	 * 拼接字段
+	 *
+	 * @return
+	 */
+	//Field<T> join (Field<?> field, String with);
 }
