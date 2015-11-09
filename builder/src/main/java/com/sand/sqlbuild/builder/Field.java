@@ -32,7 +32,7 @@ public interface Field<T>{
 	/**
 	 * 在一个范围内 (in)
 	 *
-	 * @param list
+	 * @param values
 	 * @return
 	 */
 	Filter<T> in (@SuppressWarnings("unchecked") T... values);
@@ -56,7 +56,7 @@ public interface Field<T>{
 	/**
 	 * 等于（=）
 	 * 
-	 * @param value
+	 * @param field
 	 * @return
 	 */
 	Filter<T> eq (Field<T> field);

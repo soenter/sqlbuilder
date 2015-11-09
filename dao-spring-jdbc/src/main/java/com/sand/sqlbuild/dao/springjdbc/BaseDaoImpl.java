@@ -12,8 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author : sun.mt
@@ -71,7 +70,7 @@ public class BaseDaoImpl implements BaseDao{
 		try {
 			return this.getJdbcTemplate().queryForObject(sql, params, new RowMapper<R>() {
 
-				public R mapRow(ResultSet rs, int rowNum) throws SQLException {
+				public R mapRow (ResultSet rs, int rowNum) throws SQLException {
 					jdbcTypeToJavaType(rs, buildResult.getSelectFields(), po);
 					return po;
 				}
@@ -92,7 +91,7 @@ public class BaseDaoImpl implements BaseDao{
 		try {
 			return this.getJdbcTemplate().queryForObject(sql, params, new RowMapper<R>() {
 
-				public R mapRow(ResultSet rs, int rowNum) throws SQLException {
+				public R mapRow (ResultSet rs, int rowNum) throws SQLException {
 					return rs.getObject(1, clazz);
 				}
 
@@ -111,9 +110,9 @@ public class BaseDaoImpl implements BaseDao{
 		Object[] params = buildResult.getParameters().toArray();
 
 		try {
-			return this.getJdbcTemplate().query(sql, params, new RowMapper<R>(){
+			return this.getJdbcTemplate().query(sql, params, new RowMapper<R>() {
 
-				public R mapRow(ResultSet rs, int rowNum) throws SQLException {
+				public R mapRow (ResultSet rs, int rowNum) throws SQLException {
 					try {
 						R po = clazz.newInstance();
 
@@ -186,6 +185,81 @@ public class BaseDaoImpl implements BaseDao{
 
 
 		return update(builder.build());
+	}
+
+	public <R extends AbstractPo> int upsertOracle (Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz) {
+
+		// 使用 oracle merge into 语法实现 upsert
+		String tableName = newInstance(clazz).getName();
+
+		// 为了去 setters 和 filters 中重复字段
+		Map<String, Field<?>> insertFieldMap = new HashMap<String, Field<?>>(setters.length + filters.length);
+		List<Object> params = new ArrayList<Object>(setters.length + filters.length);
+
+		StringBuilder incomingSql = new StringBuilder("(select ");
+		for(int i = 0; i < filters.length; i ++){
+			if(i != 0){
+				incomingSql.append(", ");
+			}
+			Field<?> field = filters[i].getField();
+			incomingSql.append("? ").append(field.getName());
+			insertFieldMap.put(field.getName(), field);
+			params.add(filters[i].getValue());
+		}
+		for(int i = 0; i < setters.length; i ++){
+			Field<?> field = setters[i].getField();
+			incomingSql.append(", ? ").append(field.getName());
+			insertFieldMap.put(field.getName(), field);
+			params.add(setters[i].getValue());
+		}
+		incomingSql.append(" from dual) incoming");
+
+		StringBuilder filterSql = new StringBuilder("(");
+		for(int i = 0; i < filters.length; i ++){
+			if(i != 0){
+				filterSql.append(" and ");
+			}
+			Field<?> field = filters[i].getField();
+			filterSql.append(tableName).append(".").append(field.getName()).append(" ")
+					.append(filters[i].getOperator())
+					.append(" incoming.").append(field.getName());
+		}
+		filterSql.append(")");
+
+		StringBuilder updateSql = new StringBuilder("update set ");
+		for(int i = 0; i < setters.length; i ++){
+			if(i != 0){
+				updateSql.append(", ");
+			}
+			Field<?> field = setters[i].getField();
+			updateSql.append(tableName).append(".").append(field.getName()).append(" ")
+					.append(" = incoming.").append(field.getName());
+		}
+
+		StringBuilder insertSql = new StringBuilder("insert (");
+		StringBuilder valusSql = new StringBuilder("values (");
+
+		Iterator<Field<?>> fieldsIt = insertFieldMap.values().iterator();
+		boolean isFirst = true;
+		while (fieldsIt.hasNext()){
+			Field<?> field = fieldsIt.next();
+			if(isFirst){
+				isFirst = false;
+			} else {
+				insertSql.append(", ");
+				valusSql.append(", ");
+			}
+			insertSql.append(tableName).append(".").append(field.getName());
+			valusSql.append("incoming.").append(field.getName());
+		}
+		insertSql.append(")");
+		valusSql.append(")");
+
+		StringBuilder mergeSql = new StringBuilder("merge into ").append(tableName).append(" using ").append(incomingSql)
+				.append(" on ").append(filterSql).append(" when matched then ").append(updateSql)
+				.append(" when not matched then ").append(insertSql).append(" ").append(valusSql);
+
+		return getJdbcTemplate().update(mergeSql.toString(), params.toArray());
 	}
 
 	public <R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz) {
