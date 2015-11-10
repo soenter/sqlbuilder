@@ -1,6 +1,7 @@
 package com.sand.sqlbuild.builder;
 
 
+import java.util.List;
 
 /**
  *
@@ -28,6 +29,10 @@ public interface Builder {
 	Builder insert (Class<? extends Table> clazz, Field<?>... fields);
 	
 	Builder values (Object... values);
+
+	Builder insert (Class<? extends Table> clazz, Setter<?>... setters);
+
+	Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters);
 
 	/*------------------------------------更新（update）------------------------------------*/
 

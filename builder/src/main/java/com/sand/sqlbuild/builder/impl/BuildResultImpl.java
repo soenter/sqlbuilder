@@ -18,14 +18,17 @@ public class BuildResultImpl implements BuildResult {
 	
 	private final List<Object> params;
 	
-	private List<Field<?>> selectFields;
+	private final List<Field<?>> selectFields;
+
+	private List<Field<?>> emptyValueFields;
 	
 
-	public BuildResultImpl(StringBuilder builder, List<Object> params, List<Field<?>> selectFields) {
+	public BuildResultImpl(StringBuilder builder, List<Object> params, List<Field<?>> selectFields, List<Field<?>> emptyValueFields) {
 		super();
 		this.builder = builder;
 		this.params = params;
 		this.selectFields = selectFields;
+		this.emptyValueFields = emptyValueFields;
 	}
 
 	public String getSql() {
@@ -44,4 +47,7 @@ public class BuildResultImpl implements BuildResult {
 		return selectFields;
 	}
 
+	public List<Field<?>> getEmptyValuesFields () {
+		return emptyValueFields;
+	}
 }

@@ -296,4 +296,20 @@ public class FieldImpl<T> implements Field<T> {
 	public int hashCode() {
 		return getAsName().hashCode();
 	}
+
+	public Filter<?> epv () {
+		return new FilterImpl(this, "=");
+	}
+
+	public Filter<?> epv (String operator) {
+		if(operator == null || "".equals((operator = operator.trim()))){
+			throw new IllegalArgumentException("epv 方法的 operator 暂时不能为 null 或空");
+		} else if("like".equalsIgnoreCase(operator)){
+			throw new IllegalArgumentException("epv 方法的 operator 暂时不支持 like 语法");
+		} else if("in".equalsIgnoreCase(operator)){
+			throw new IllegalArgumentException("epv 方法的 operator 暂时不支持 in 语法");
+		}
+
+		return new FilterImpl(this, operator);
+	}
 }

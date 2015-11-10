@@ -35,6 +35,24 @@ public interface BaseDao {
 	int update(BuildResult buildResult);
 
 	/**
+	 * 批量更新
+	 * @param result Builder 结果
+	 * @param params 参数集合
+	 * @param <R>
+	 * @return
+	 */
+	<R extends AbstractPo> int[] batchUpdate(BuildResult result, List<R> params);
+
+	/**
+	 * 批量更新
+	 * @param result
+	 * @param poGetter
+	 * @param <R>
+	 * @return
+	 */
+	<R extends AbstractPo> int[] batchUpdate(BuildResult result, BatchPoGetter poGetter);
+
+	/**
 	 * 删除
 	 *
 	 * @param buildResult Builder构建后的结果对象

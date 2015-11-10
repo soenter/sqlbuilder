@@ -52,7 +52,7 @@ public interface Field<T>{
 	 * @return
 	 */
 	Filter<T> eq (T value);
-	
+
 	/**
 	 * 等于（=）
 	 * 
@@ -234,4 +234,21 @@ public interface Field<T>{
 	 * @return
 	 */
 	//Field<T> join (Field<?> field, String with);
+
+
+	/**
+	 * 过滤空值（empty value）默认操作符为“=”
+	 *
+	 * @return
+	 */
+	Filter<?> epv ();
+
+
+	/**
+	 * 过滤空值（empty value）
+	 *
+	 * @param operator 合法 SQL 操作符号：=、!=、>、< 等。暂时不支持like、in；
+	 * @return
+	 */
+	Filter<?> epv (String operator);
 }

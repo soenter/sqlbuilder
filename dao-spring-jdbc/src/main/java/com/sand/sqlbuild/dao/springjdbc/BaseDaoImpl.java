@@ -7,9 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -49,6 +51,55 @@ public class BaseDaoImpl implements BaseDao{
 		} catch (DataAccessException e){
 			LOGGER.error("data access exceptions parameters : {}", Arrays.toString(params));
 			throw e;
+		}
+	}
+
+	public <R extends AbstractPo> int[] batchUpdate (BuildResult result, List<R> params) {
+
+		checkBatch(result);
+		List<Object[]> batchArgs = new ArrayList<Object[]>(params.size());
+
+		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
+
+		for(AbstractPo po: params){
+			Object[] objs = new Object[po.size()];
+
+			int index = 0;
+			for(Field<?> field: emptyFiels){
+				objs[index++] = po.getValue(field);
+			}
+
+			batchArgs.add(objs);
+		}
+
+		return this.getJdbcTemplate().batchUpdate(result.getSql(), batchArgs);
+	}
+
+	public <R extends AbstractPo> int[] batchUpdate (BuildResult result, final BatchPoGetter poGetter) {
+
+		checkBatch(result);
+		final List<Field<?>> emptyFiels = result.getEmptyValuesFields();
+
+		return this.getJdbcTemplate().batchUpdate(result.getSql(), new BatchPreparedStatementSetter(){
+
+			public void setValues (PreparedStatement ps, int i) throws SQLException {
+				int index = 0;
+				for(Field<?> field: emptyFiels){
+					ps.setObject(index++, poGetter.getPo(i).getValue(field));
+				}
+			}
+
+			public int getBatchSize () {
+				return poGetter.getBatchSize();
+			}
+		});
+	}
+
+	private void checkBatch(BuildResult result){
+		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
+
+		if(emptyFiels == null || emptyFiels.isEmpty()){
+			throw new IllegalArgumentException("批量执行 EmptyValuesFields 不能未空");
 		}
 	}
 
@@ -189,77 +240,10 @@ public class BaseDaoImpl implements BaseDao{
 
 	public <R extends AbstractPo> int upsertOracle (Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz) {
 
-		// 使用 oracle merge into 语法实现 upsert
-		String tableName = newInstance(clazz).getName();
-
-		// 为了去 setters 和 filters 中重复字段
-		Map<String, Field<?>> insertFieldMap = new HashMap<String, Field<?>>(setters.length + filters.length);
-		List<Object> params = new ArrayList<Object>(setters.length + filters.length);
-
-		StringBuilder incomingSql = new StringBuilder("(select ");
-		for(int i = 0; i < filters.length; i ++){
-			if(i != 0){
-				incomingSql.append(", ");
-			}
-			Field<?> field = filters[i].getField();
-			incomingSql.append("? ").append(field.getName());
-			insertFieldMap.put(field.getName(), field);
-			params.add(filters[i].getValue());
-		}
-		for(int i = 0; i < setters.length; i ++){
-			Field<?> field = setters[i].getField();
-			incomingSql.append(", ? ").append(field.getName());
-			insertFieldMap.put(field.getName(), field);
-			params.add(setters[i].getValue());
-		}
-		incomingSql.append(" from dual) incoming");
-
-		StringBuilder filterSql = new StringBuilder("(");
-		for(int i = 0; i < filters.length; i ++){
-			if(i != 0){
-				filterSql.append(" and ");
-			}
-			Field<?> field = filters[i].getField();
-			filterSql.append(tableName).append(".").append(field.getName()).append(" ")
-					.append(filters[i].getOperator())
-					.append(" incoming.").append(field.getName());
-		}
-		filterSql.append(")");
-
-		StringBuilder updateSql = new StringBuilder("update set ");
-		for(int i = 0; i < setters.length; i ++){
-			if(i != 0){
-				updateSql.append(", ");
-			}
-			Field<?> field = setters[i].getField();
-			updateSql.append(tableName).append(".").append(field.getName()).append(" ")
-					.append(" = incoming.").append(field.getName());
-		}
-
-		StringBuilder insertSql = new StringBuilder("insert (");
-		StringBuilder valusSql = new StringBuilder("values (");
-
-		Iterator<Field<?>> fieldsIt = insertFieldMap.values().iterator();
-		boolean isFirst = true;
-		while (fieldsIt.hasNext()){
-			Field<?> field = fieldsIt.next();
-			if(isFirst){
-				isFirst = false;
-			} else {
-				insertSql.append(", ");
-				valusSql.append(", ");
-			}
-			insertSql.append(tableName).append(".").append(field.getName());
-			valusSql.append("incoming.").append(field.getName());
-		}
-		insertSql.append(")");
-		valusSql.append(")");
-
-		StringBuilder mergeSql = new StringBuilder("merge into ").append(tableName).append(" using ").append(incomingSql)
-				.append(" on ").append(filterSql).append(" when matched then ").append(updateSql)
-				.append(" when not matched then ").append(insertSql).append(" ").append(valusSql);
-
-		return getJdbcTemplate().update(mergeSql.toString(), params.toArray());
+		Builder builder = BuilderFactory.create()
+				.upsertOracle(clazz, setters, filters);
+		BuildResult result = builder.build();
+		return getJdbcTemplate().update(result.getSql(), result.getParameters());
 	}
 
 	public <R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz) {

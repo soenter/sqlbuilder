@@ -16,4 +16,7 @@ public interface BuildResult {
 	List<Object> getParameters ();
 	
 	List<Field<?>> getSelectFields ();
+
+	List<Field<?>> getEmptyValuesFields ();
+
 }

@@ -66,5 +66,7 @@ public class SetterImpl <T> implements Setter<T> {
 		return fieldValue != null;
 	}
 
-
+	public boolean isEmptyValue () {
+		return fieldValue == null && value == null;
+	}
 }

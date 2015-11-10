@@ -38,6 +38,14 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 		this.type = type;
 	}
 
+
+	FilterImpl(Field<T> field, String operator) {
+		super(field, (T)null);
+		this.operator = operator;
+		this.type = Type.ONE;
+	}
+
+
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getOperator()
 	 */

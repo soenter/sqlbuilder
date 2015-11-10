@@ -17,5 +17,7 @@ public interface Setter <T>{
 	
 	boolean isFieldValue ();
 
+	boolean isEmptyValue();
+
 
 }

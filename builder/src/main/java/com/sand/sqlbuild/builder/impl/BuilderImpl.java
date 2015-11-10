@@ -2,8 +2,7 @@ package com.sand.sqlbuild.builder.impl;
 
 import com.sand.sqlbuild.builder.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -20,6 +19,8 @@ public class BuilderImpl implements Builder {
 	private List<Object> params;
 	
 	private List<Field<?>> selectFields;
+
+	private List<Field<?>> emptyValueFields;
 	
 	private int fieldCount;
 	private int valueCount;
@@ -31,9 +32,8 @@ public class BuilderImpl implements Builder {
 	boolean isFirstSetOrders;
 	boolean isFirstSetGroups;
 	boolean isUnionFlag;
-	
-	
-	//private Type type;
+
+	private Type type;
 	
 	//private Join join;
 	
@@ -43,8 +43,6 @@ public class BuilderImpl implements Builder {
 	
 	private void init(){
 		builder = new StringBuilder();
-		params = new ArrayList<Object>();
-		selectFields = new ArrayList<Field<?>>();
 		fieldCount = 0;
 		valueCount = 0;
 		isFirstSetFields = true;
@@ -53,6 +51,7 @@ public class BuilderImpl implements Builder {
 		isFirstSetOrders = true;
 		isFirstSetGroups = true;
 		isUnionFlag = false;
+
 	}
 
 	public Builder reinit(){
@@ -63,7 +62,7 @@ public class BuilderImpl implements Builder {
 	/*------------------------------------查询（select）------------------------------------*/
 	
 	public Builder select() {
-		//type = Type.select;
+		type = Type.select;
 		builder.append("select ");
 		return this;
 	}
@@ -86,7 +85,7 @@ public class BuilderImpl implements Builder {
 			}
 			builder.append(field.getFullName());
 			if(!isUnionFlag){
-				selectFields.add(field);
+				getSelectFields().add(field);
 			}
 		}
 		return this;
@@ -101,10 +100,11 @@ public class BuilderImpl implements Builder {
 
 
 	public Builder insert(Class<? extends Table> clazz, Field<?>... fields) {
-		//type = Type.insert;
+		type = Type.insert;
 		Table table = newTable(clazz);
 		builder.append("insert into ").append(table.getName()).append("(");
 		fields(fields);
+		builder.append(")");
 		return this;
 	}
 
@@ -117,7 +117,7 @@ public class BuilderImpl implements Builder {
 			throw new IllegalArgumentException("values参数长度:" + valueCount + "与fields参数长度:" + fieldCount + "不匹配");
 		}
 		
-		builder.append(") values( ");
+		builder.append(" values( ");
 		for (Object object : values) {
 			if(isFirstSetValues){
 				isFirstSetValues =  false;
@@ -126,7 +126,7 @@ public class BuilderImpl implements Builder {
 			}
 			builder.append("?");
 			valueCount ++;
-			params.add(object);
+			getParams().add(object);
 		}
 		builder.append(")");
 		
@@ -134,12 +134,137 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
+	public Builder insert (Class<? extends Table> clazz, Setter<?>... setters) {
 
+		Field<?>[] fields = new Field<?>[setters.length];
+		Object[] values = new Object[setters.length];
+
+		boolean lastEmptyValue = false;
+		for (int i = 0; i < setters.length; i++) {
+			fields[i] = setters[i].getField();
+
+			if(i == 0){
+				lastEmptyValue = setters[i].isEmptyValue();
+			} else if(lastEmptyValue != setters[i].isEmptyValue()){
+				throw new IllegalArgumentException("setters 的 isEmptyValue 必须保持一致");
+			}
+			if(!lastEmptyValue){
+				values[i] = setters[i].getValue();
+			}
+		}
+
+		if (lastEmptyValue){
+			return insert(clazz, fields);
+		} else {
+			return insert(clazz, fields).values(values);
+		}
+
+	}
+
+
+	private static final String UPSERT_SERTER_PREFIX = "setter_";
+	private static final String UPSERT_FILTER_PREFIX = "filter_";
+
+	public Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters) {
+		// 使用 oracle merge into 语法实现 upsert
+		String tableName = newTable(clazz).getName();
+
+		// 为了去 setters 和 filters 中重复字段
+		Map<Field<?>, String> insertFieldMap = new HashMap<Field<?>, String>(setters.length + filters.length);
+
+		StringBuilder incomingSql = new StringBuilder("(select ");
+		for(int i = 0; i < filters.length; i ++){
+			if(i != 0){
+				incomingSql.append(", ");
+			}
+			Field<?> field = filters[i].getField();
+			String incomingFieldName = UPSERT_FILTER_PREFIX + field.getName();
+			incomingSql.append("? ").append(incomingFieldName);
+			insertFieldMap.put(field, incomingFieldName);
+			if(!filters[i].isEmptyValue()){
+				getParams().add(filters[i].getValue());
+			}
+		}
+		for(int i = 0; i < setters.length; i ++){
+			Field<?> field = setters[i].getField();
+			String incomingFieldName = UPSERT_SERTER_PREFIX + field.getName();
+			incomingSql.append(", ? ").append(incomingFieldName);
+			insertFieldMap.put(field, incomingFieldName);
+			if(!setters[i].isEmptyValue()){
+				getParams().add(setters[i].getValue());
+			}
+		}
+		incomingSql.append(" from dual) incoming");
+
+		StringBuilder filterSql = new StringBuilder("(");
+		for(int i = 0; i < filters.length; i ++){
+			if(i != 0){
+				filterSql.append(" and ");
+			}
+			Field<?> field = filters[i].getField();
+			filterSql.append(tableName).append(".").append(field.getName()).append(" ")
+					.append(filters[i].getOperator())
+					.append(" incoming.").append(UPSERT_FILTER_PREFIX).append(field.getName());
+		}
+		filterSql.append(")");
+
+		StringBuilder updateSql = new StringBuilder("update set ");
+		for(int i = 0; i < setters.length; i ++){
+			if(i != 0){
+				updateSql.append(", ");
+			}
+			Field<?> field = setters[i].getField();
+			updateSql.append(tableName).append(".").append(field.getName()).append(" ")
+					.append(" = incoming.").append(UPSERT_SERTER_PREFIX).append(field.getName());
+		}
+
+		StringBuilder insertSql = new StringBuilder("insert (");
+		StringBuilder valusSql = new StringBuilder("values (");
+
+		Iterator<Map.Entry<Field<?>, String>> fieldsIt = insertFieldMap.entrySet().iterator();
+		boolean isFirst = true;
+		while (fieldsIt.hasNext()){
+			Map.Entry<Field<?>, String> entryIt = fieldsIt.next();
+			Field<?> field = entryIt.getKey();
+			if(isFirst){
+				isFirst = false;
+			} else {
+				insertSql.append(", ");
+				valusSql.append(", ");
+			}
+			insertSql.append(tableName).append(".").append(field.getName());
+			valusSql.append("incoming.").append(entryIt.getValue());
+		}
+		insertSql.append(")");
+		valusSql.append(")");
+
+		builder.append("merge into ").append(tableName).append(" using ").append(incomingSql)
+				.append(" on ").append(filterSql).append(" when matched then ").append(updateSql)
+				.append(" when not matched then ").append(insertSql).append(" ").append(valusSql);
+
+		return this;
+	}
+
+	private Builder values(int size) {
+
+		builder.append(" values( ");
+		for (int i = 0; i <  size; i++) {
+			if(i != 0){
+				comma();
+			}
+			builder.append("?");
+			valueCount ++;
+		}
+		builder.append(")");
+
+
+		return this;
+	}
 	/*------------------------------------更新（update）------------------------------------*/
 
 
 	public Builder update(Class<? extends Table> clazz) {
-		//type = Type.update;
+		type = Type.update;
 		Table table = newTable(clazz);
 		builder.append("update ").append(table.getName());
 		return this;
@@ -151,12 +276,18 @@ public class BuilderImpl implements Builder {
 			throw new IllegalArgumentException("values参数不能为null或长度等于0");
 		}
 		builder.append(" set ");
+		boolean lastEmptyValue = false;
 		for (Setter<?> setter : setters) {
 			if(isFirstSetSetters){
 				isFirstSetSetters = false;
+				lastEmptyValue = setter.isEmptyValue();
 			} else {
+				if(lastEmptyValue != setter.isEmptyValue()){
+					throw new IllegalArgumentException("setters 的 isEmptyValue 必须保持一致");
+				}
 				comma();
 			}
+
 			if(setter.isFieldValue()){
 				
 				Field<?> fieldValue = setter.getFieldValue();
@@ -164,20 +295,34 @@ public class BuilderImpl implements Builder {
 				
 				if(fieldValue.hasOperator()){
 					builder.append(" ").append(fieldValue.getOperator()).append(" ?");
-					params.add(fieldValue.getOperValue());
+					getParams().add(fieldValue.getOperValue());
 				}
 				
+			} else if(setter.isEmptyValue()){
+				builder.append(setter.getField().getFullName()).append(" = ?");
+				getEmptyValueFields().add(setter.getField());
 			} else {
 				builder.append(setter.getField().getFullName()).append(" = ?");
-				params.add(setter.getValue());
+				getParams().add(setter.getValue());
 			}
 		}
 		return this;
 	}
 
+	public Builder set (Field<?>... fields) {
+		builder.append(" set ");
+		for (int i = 0; i < fields.length; i++){
+			if(i != 0){
+				comma();
+			}
+			builder.append(fields[i].getFullName()).append(" = ?");
+
+		}
+		return this;
+	}
 	/*------------------------------------删除（update）------------------------------------*/
-	
-	
+
+
 	public Builder delete() {
 		builder.append("delete ");
 		return this;
@@ -254,7 +399,7 @@ public class BuilderImpl implements Builder {
 			builder.append(filter.getFieldValue().getFullName());
 		} else {
 			builder.append("?");
-			params.add(filter.getValue());
+			getParams().add(filter.getValue());
 		}
 		return this;
 	}
@@ -270,7 +415,7 @@ public class BuilderImpl implements Builder {
 	}
 
 
-	public Builder where(Filter<?> filter) {
+	public Builder where (Filter<?> filter) {
 		builder.append(" where ");
 		return filter(filter);
 	}
@@ -278,7 +423,7 @@ public class BuilderImpl implements Builder {
 	public Builder where(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" where ").append(fbr.getSql());
-		params.addAll(fbr.getParameters());
+		getParams().addAll(fbr.getParameters());
 		return this;
 	}
 
@@ -295,11 +440,11 @@ public class BuilderImpl implements Builder {
 	public Builder and(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" and ").append(fbr.getSql());
-		params.addAll(fbr.getParameters());
+		getParams().addAll(fbr.getParameters());
 		return this;
 	}
 
-	public Builder or(Filter<?> filter) {
+	public Builder or (Filter<?> filter) {
 		builder.append(" or ");
 		return filter(filter);
 	}
@@ -307,7 +452,7 @@ public class BuilderImpl implements Builder {
 	public Builder or(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" or ").append(fbr.getSql());
-		params.addAll(fbr.getParameters());
+		getParams().addAll(fbr.getParameters());
 		return this;
 	}
 
@@ -322,11 +467,14 @@ public class BuilderImpl implements Builder {
 			if(fieldValue.hasOperator()){
 				builder.append(" ").append(fieldValue.getOperator()).append(" ");
 			}
+		} else if(filter.isEmptyValue()){
+			builder.append(operator).append(" ? ");
+			getEmptyValueFields().add(filter.getField());
 		} else {
 			if(filter.getType() == Filter.Type.ONE){
 				if(null != filter.getValue()){
-					builder.append(operator).append(" ").append("?");
-					params.add(filter.getValue());
+					builder.append(operator).append(" ? ");
+					getParams().add(filter.getValue());
 				} else {
 					builder.append(operator).append(" ");
 				}
@@ -336,8 +484,8 @@ public class BuilderImpl implements Builder {
 
 				builder.append(operator).append(" ");
 				
-				params.add(filter.getValues()[0]);
-				params.add(filter.getValues()[1]);
+				getParams().add(filter.getValues()[0]);
+				getParams().add(filter.getValues()[1]);
 				
 			} else if(filter.getType() == Filter.Type.MULTI){
 				if(filter.getValues() == null) 
@@ -352,7 +500,7 @@ public class BuilderImpl implements Builder {
 						comma();
 					}
 					builder.append("?");
-					params.add(value);
+					getParams().add(value);
 				}
 				builder.append(")");
 			} else {
@@ -411,7 +559,7 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	public Builder rownum(int rownum) {
+	public Builder rownum (int rownum) {
 		builder.append(" rownum <= ").append(rownum);
 		return this;
 	}
@@ -462,14 +610,14 @@ public class BuilderImpl implements Builder {
 	public Builder as(Field<?> field) {
 		builder.append(" as ").append(field.getAsName());
 		if(!isUnionFlag){
-			selectFields.add(field);
+			getSelectFields().add(field);
 		}
 		return this;
 	}
 
 
     public Builder as(String aliasName, Class<?> javaType) {
-		Field<?> asField = FieldFactory.create(aliasName, javaType);
+	    Field<?> asField = FieldFactory.create(aliasName, javaType);
         return as(asField);
     }
 
@@ -508,10 +656,20 @@ public class BuilderImpl implements Builder {
 		isFirstSetGroups = true;
 
 		isUnionFlag = true;
+
+		type = null;
 	}
 
 	public BuildResult build() {
-		BuildResult result = new BuildResultImpl(builder, params, selectFields);
+
+		if(type != null){
+
+			if(type == Type.insert && valueCount != fieldCount){
+				values(fieldCount);
+			}
+		}
+
+		BuildResult result = new BuildResultImpl(builder, params, selectFields, emptyValueFields);
 		//重新初始化
 		//init();
 		return result;
@@ -531,5 +689,25 @@ public class BuilderImpl implements Builder {
 		leftJoin,
 		rightJoin,
 	}
-	
+
+	private List<Object> getParams(){
+		if(params == null){
+			params = new ArrayList<Object>();
+		}
+		return params;
+	}
+
+	private List<Field<?>> getEmptyValueFields(){
+		if(emptyValueFields == null){
+			emptyValueFields = new ArrayList<Field<?>>();
+		}
+		return emptyValueFields;
+	}
+
+	private List<Field<?>> getSelectFields(){
+		if(selectFields == null){
+			selectFields = new ArrayList<Field<?>>();
+		}
+		return selectFields;
+	}
 }

@@ -153,7 +153,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 		builder.append(whereBr.getSql());
 		params.addAll(whereBr.getParameters());
 		
-		return new BuildResultImpl(builder, params, null);
+		return new BuildResultImpl(builder, params, null, null);
 	}
 
 	/* (non-Javadoc)
@@ -220,7 +220,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 		//order 
 		builder.append(orderBr.getSql()).append(" ");
 		
-		return new BuildResultImpl(builder, params, selectBr.getSelectFields());
+		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
 	}
 	
 	private void buildResult(){
