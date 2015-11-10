@@ -1,6 +1,7 @@
 package com.sand.sqlbuild.builder;
 
 
+import java.util.List;
 
 /**
  *
@@ -34,6 +35,8 @@ public interface Builder {
 	Builder update (Class<? extends Table> clazz);
 
 	Builder set (Setter<?>... setters);
+
+	Builder set (Field<?> field);
 
 	/*------------------------------------删除（update）------------------------------------*/
 
@@ -83,17 +86,17 @@ public interface Builder {
 	Builder where (Filter<?> filter);
 
 	Builder where (FilterBuilder filterBuilder);
-	
+
 	Builder and ();
 	
 	Builder and (Filter<?> filter);
 	
 	Builder and (FilterBuilder filterBuilder);
-	
+
 	Builder or (Filter<?> filter);
 	
 	Builder or (FilterBuilder filterBuilder);
-	
+
 	Builder orderBy (Order... orders);
 	
 	Builder groupBy (Field<?>... fields);
@@ -208,7 +211,26 @@ public interface Builder {
 
 
 	/**
-	 * 从新初始化
+	 * 重新初始化
 	 */
 	Builder reinit ();
+
+	Builder cases();
+
+	Builder cases(Field<?> field);
+
+	Builder when(Object value);
+
+	Builder when(Filter<?> filter);
+
+	Builder then(Object value);
+
+	Builder then(Field<?> field);
+
+	Builder elses(Object value);
+
+	Builder elses(Field<?> field);
+
+	Builder end();
+
 }

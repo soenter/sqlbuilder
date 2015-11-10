@@ -31,6 +31,7 @@ public class BuilderImpl implements Builder {
 	boolean isFirstSetOrders;
 	boolean isFirstSetGroups;
 	boolean isUnionFlag;
+	boolean hasSetKey;
 	
 	
 	//private Type type;
@@ -39,20 +40,6 @@ public class BuilderImpl implements Builder {
 	
 	BuilderImpl(){
 		init();
-	}
-	
-	private void init(){
-		builder = new StringBuilder();
-		params = new ArrayList<Object>();
-		selectFields = new ArrayList<Field<?>>();
-		fieldCount = 0;
-		valueCount = 0;
-		isFirstSetFields = true;
-		isFirstSetSetters = true;
-		isFirstSetValues = true;
-		isFirstSetOrders = true;
-		isFirstSetGroups = true;
-		isUnionFlag = false;
 	}
 
 	public Builder reinit(){
@@ -102,7 +89,7 @@ public class BuilderImpl implements Builder {
 
 	public Builder insert(Class<? extends Table> clazz, Field<?>... fields) {
 		//type = Type.insert;
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append("insert into ").append(table.getName()).append("(");
 		fields(fields);
 		return this;
@@ -140,7 +127,7 @@ public class BuilderImpl implements Builder {
 
 	public Builder update(Class<? extends Table> clazz) {
 		//type = Type.update;
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append("update ").append(table.getName());
 		return this;
 	}
@@ -150,7 +137,8 @@ public class BuilderImpl implements Builder {
 		if(setters == null || setters.length == 0){
 			throw new IllegalArgumentException("values参数不能为null或长度等于0");
 		}
-		builder.append(" set ");
+
+		appendSetKey();
 		for (Setter<?> setter : setters) {
 			if(isFirstSetSetters){
 				isFirstSetSetters = false;
@@ -175,6 +163,12 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
+	public Builder set (Field<?> field) {
+		appendSetKey();
+		builder.append(field.getFullName());
+		return this;
+	}
+
 	/*------------------------------------删除（update）------------------------------------*/
 	
 	
@@ -187,7 +181,7 @@ public class BuilderImpl implements Builder {
 
 	public Builder join(Class<? extends Table> clazz) {
 		//FIXME 获取表名，改为注解形式
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append(" inner join ").append(table.getName());
 		return this;
 	}
@@ -198,14 +192,14 @@ public class BuilderImpl implements Builder {
 
 	public Builder leftJoin(Class<? extends Table> clazz) {
 		//TODO 获取表名，改为注解形式
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append(" left join ").append(table.getName());
 		return this;
 	}
 
 	public Builder rightJoin(Class<? extends Table> clazz) {
 		//TODO 获取表名，改为注解形式
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append(" right join ").append(table.getName());
 		return this;
 	}
@@ -215,18 +209,18 @@ public class BuilderImpl implements Builder {
 
 	public Builder from(Class<? extends Table> clazz) {
 		//FIXME 获取表名，改为注解形式
-		Table table = newTable(clazz);
+		Table table = BuilderUtils.newTable(clazz);
 		builder.append(" from ").append(table.getName());
 		return this;
 	}
 
     public Builder from(Class<? extends Table> first, Class<? extends Table>... clazzs) {
-        Table table = newTable(first);
+        Table table = BuilderUtils.newTable(first);
         builder.append(" from ").append(table.getName());
         for (Class<? extends Table> class1 : clazzs) {
             //FIXME 获取表名，改为注解形式
             comma();
-            table = newTable(class1);
+            table = BuilderUtils.newTable(class1);
             builder.append(table.getName());
         }
         return this;
@@ -237,7 +231,7 @@ public class BuilderImpl implements Builder {
 		boolean isFirst = true;
 		for (Class<? extends Table> class1 : clazzs) {
 			//FIXME 获取表名，改为注解形式
-			Table table = newTable(class1);
+			Table table = BuilderUtils.newTable(class1);
 			if(isFirst){
 				isFirst = false;
 			} else {
@@ -257,16 +251,6 @@ public class BuilderImpl implements Builder {
 			params.add(filter.getValue());
 		}
 		return this;
-	}
-
-	private Table newTable(Class<? extends Table> clazz){
-		try {
-			return clazz.newInstance();
-		} catch (InstantiationException e) {
-			throw new RuntimeException(e.getMessage());
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e.getMessage());
-		}
 	}
 
 
@@ -311,59 +295,6 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	private Builder filter(Filter<?> filter){
-		builder.append(filter.getField().getFullName()).append(" ");
-		String operator = filter.getOperator();
-		if(filter.isFieldValue()){
-			
-			Field<?> fieldValue = filter.getFieldValue();
-			builder.append(operator).append(" ").append(fieldValue.getFullName());
-			
-			if(fieldValue.hasOperator()){
-				builder.append(" ").append(fieldValue.getOperator()).append(" ");
-			}
-		} else {
-			if(filter.getType() == Filter.Type.ONE){
-				if(null != filter.getValue()){
-					builder.append(operator).append(" ").append("?");
-					params.add(filter.getValue());
-				} else {
-					builder.append(operator).append(" ");
-				}
-			} else if(filter.getType() == Filter.Type.TWIN){
-				if(filter.getValues() == null) 
-					throw new IllegalArgumentException("Filter.Type.TWIN时 值对象数组长度必须为2");
-
-				builder.append(operator).append(" ");
-				
-				params.add(filter.getValues()[0]);
-				params.add(filter.getValues()[1]);
-				
-			} else if(filter.getType() == Filter.Type.MULTI){
-				if(filter.getValues() == null) 
-					throw new IllegalArgumentException("Filter.Type.MULTI时值对象数组不能为null");
-				
-				boolean isFirst = true;
-				builder.append(operator).append(" (");
-				for (Object value : filter.getValues()) {
-					if(isFirst){
-						isFirst = false;
-					} else {
-						comma();
-					}
-					builder.append("?");
-					params.add(value);
-				}
-				builder.append(")");
-			} else {
-				throw new IllegalArgumentException("Filter.Type 非法");
-			}
-			
-		}
-
-		return this;
-	}
-	
 	public Builder orderBy(Order... orders) {
 		if(orders == null || orders.length == 0){
 			throw new IllegalArgumentException("orders参数不能为null或长度等于0");
@@ -499,15 +430,59 @@ public class BuilderImpl implements Builder {
 		unionInit();
 		return this;
 	}
-	
-	private void unionInit(){
-		isFirstSetFields = true;
-		isFirstSetSetters = true;
-		isFirstSetValues = true;
-		isFirstSetOrders = true;
-		isFirstSetGroups = true;
 
-		isUnionFlag = true;
+	public Builder cases () {
+		builder.append(" case ");
+		return this;
+	}
+
+	public Builder cases (Field<?> field) {
+		cases();
+		builder.append(field.getFullName());
+		return this;
+	}
+
+	public Builder when (Object value) {
+		builder.append(" when ").append("? ");
+		params.add(value);
+		return this;
+	}
+
+	public Builder when (Filter<?> filter) {
+		builder.append(" when ");
+		return filter(filter);
+	}
+
+	public Builder then (Object value) {
+		builder.append(" then ?");
+		params.add(value);
+		return this;
+	}
+
+	public Builder then (Field<?> field) {
+		builder.append(" then ").append(field.getFullName());
+		return this;
+	}
+
+	public Builder elses (Object value) {
+		builder.append(" else ?");
+		params.add(value);
+		return this;
+	}
+
+	public Builder elses (Field<?> field) {
+		builder.append(" else ").append(field.getFullName());
+		return this;
+	}
+
+	public Builder end () {
+		builder.append(" end ");
+		return this;
+	}
+
+	public Builder eq () {
+		builder.append(" = ");
+		return this;
 	}
 
 	public BuildResult build() {
@@ -516,7 +491,7 @@ public class BuilderImpl implements Builder {
 		//init();
 		return result;
 	}
-	
+
 	public enum Type{
 		select,
 		selectAll,
@@ -525,11 +500,99 @@ public class BuilderImpl implements Builder {
 		update,
 		delete,
 	}
-	
+
 	public enum Join{
 		innerJoin,
 		leftJoin,
 		rightJoin,
 	}
-	
+
+	// ========================================= private =========================================
+
+	private void
+	init(){
+		builder = new StringBuilder();
+		params = new ArrayList<Object>();
+		selectFields = new ArrayList<Field<?>>();
+		fieldCount = 0;
+		valueCount = 0;
+		isFirstSetFields = true;
+		isFirstSetSetters = true;
+		isFirstSetValues = true;
+		isFirstSetOrders = true;
+		isFirstSetGroups = true;
+		isUnionFlag = false;
+		hasSetKey = false;
+	}
+
+	private void unionInit(){
+		isFirstSetFields = true;
+		isFirstSetSetters = true;
+		isFirstSetValues = true;
+		isFirstSetOrders = true;
+		isFirstSetGroups = true;
+
+		isUnionFlag = true;
+
+		hasSetKey = false;
+	}
+
+	private Builder filter(Filter<?> filter){
+		builder.append(filter.getField().getFullName()).append(" ");
+		String operator = filter.getOperator();
+		if(filter.isFieldValue()){
+
+			Field<?> fieldValue = filter.getFieldValue();
+			builder.append(operator).append(" ").append(fieldValue.getFullName());
+
+			if(fieldValue.hasOperator()){
+				builder.append(" ").append(fieldValue.getOperator()).append(" ");
+			}
+		} else {
+			if(filter.getType() == Filter.Type.ONE){
+				if(null != filter.getValue()){
+					builder.append(operator).append(" ").append("?");
+					params.add(filter.getValue());
+				} else {
+					builder.append(operator).append(" ");
+				}
+			} else if(filter.getType() == Filter.Type.TWIN){
+				if(filter.getValues() == null)
+					throw new IllegalArgumentException("Filter.Type.TWIN时 值对象数组长度必须为2");
+
+				builder.append(operator).append(" ");
+
+				params.add(filter.getValues()[0]);
+				params.add(filter.getValues()[1]);
+
+			} else if(filter.getType() == Filter.Type.MULTI){
+				if(filter.getValues() == null)
+					throw new IllegalArgumentException("Filter.Type.MULTI时值对象数组不能为null");
+
+				boolean isFirst = true;
+				builder.append(operator).append(" (");
+				for (Object value : filter.getValues()) {
+					if(isFirst){
+						isFirst = false;
+					} else {
+						comma();
+					}
+					builder.append("?");
+					params.add(value);
+				}
+				builder.append(")");
+			} else {
+				throw new IllegalArgumentException("Filter.Type 非法");
+			}
+		}
+
+		return this;
+	}
+
+	private void appendSetKey(){
+		if(!hasSetKey){
+			hasSetKey = true;
+			builder.append(" set ");
+		}
+	}
 }

@@ -7,7 +7,7 @@ package com.sand.sqlbuild.builder;
  * @since 1.0.0
  *
  */
-public interface Setter <T>{
+public interface Setter <T> extends SqlResult{
 
 	Field<T> getField ();
 	
@@ -16,6 +16,4 @@ public interface Setter <T>{
 	Field<T> getFieldValue ();
 	
 	boolean isFieldValue ();
-
-
 }

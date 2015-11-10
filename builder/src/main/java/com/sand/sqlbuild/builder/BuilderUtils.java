@@ -18,4 +18,16 @@ public class BuilderUtils {
 			}
 		}
 	}
+
+
+
+	public static Table newTable(Class<? extends Table> clazz){
+		try {
+			return clazz.newInstance();
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e.getMessage());
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
 }

@@ -1,25 +1,13 @@
-/**
- * Copyright : http://www.sandpay.com.cn/ , 2003-2014
- * Project : abacus-util-data-sqlbuild
- * $Id$
- * $Revision$
- * Last Changed by sun.mt at 2015年5月6日 下午7:06:26
- * $URL$
- * 
- * Change Log
- * Author      Change Date    Comments
- *-------------------------------------------------------------
- * sun.mt         2015年5月6日        Initailized
- */
 package com.sand.sqlbuild.builder.impl;
 
 import com.sand.sqlbuild.builder.Field;
 import com.sand.sqlbuild.builder.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
- * @ClassName ：SetterImpl
- * @Description : 
  * @author : sun.mt
  * @date : 2015年5月6日 下午7:06:26
  * @since 1.0.0
@@ -27,6 +15,9 @@ import com.sand.sqlbuild.builder.Setter;
  */
 public class SetterImpl <T> implements Setter<T> {
 
+	private StringBuilder sql = new StringBuilder();
+
+	private List<Object> params = new ArrayList<Object>();
 
 	private Field<T> field;
 	
@@ -37,11 +28,19 @@ public class SetterImpl <T> implements Setter<T> {
 	public SetterImpl(Field<T> field, T value){
 		this.field = field;
 		this.value = value;
+
+		sql.append(" ").append(field.getSql()).append(" = ?");
+		params.addAll(field.getParameters());
+		params.add(value);
 	}
 	
 	public SetterImpl(Field<T> field, Field<T> value){
 		this.field = field;
 		this.fieldValue = value;
+
+		sql.append(" ").append(field.getSql()).append(" = ").append(value.getSql());
+		params.addAll(field.getParameters());
+		params.addAll(value.getParameters());
 	}
 
 	/* (non-Javadoc)
@@ -66,5 +65,11 @@ public class SetterImpl <T> implements Setter<T> {
 		return fieldValue != null;
 	}
 
+	public String getSql () {
+		return sql.toString();
+	}
 
+	public List<Object> getParameters () {
+		return params;
+	}
 }

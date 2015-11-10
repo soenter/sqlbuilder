@@ -9,7 +9,7 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public interface Field<T>{
+public interface Field<T> extends SqlResult{
 	
 	Class<T> getJavaType ();
 	
@@ -234,4 +234,26 @@ public interface Field<T>{
 	 * @return
 	 */
 	//Field<T> join (Field<?> field, String with);
+
+
+
+	Field <T> cases();
+
+	Field <T> cases(Field<T> field);
+
+	Field <T> caseSelf();
+
+	Field <T> when(Object value);
+
+	Field <T> when(Filter<T> filter);
+
+	Field <T> then(Object value);
+
+	Field <T> then(Field<T> field);
+
+	Field <T> elses(Object value);
+
+	Field <T> elses(Field<T> field);
+
+	Field <T> end();
 }
