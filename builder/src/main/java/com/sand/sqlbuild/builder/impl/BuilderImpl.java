@@ -125,7 +125,6 @@ public class BuilderImpl implements Builder {
 				comma();
 			}
 			builder.append("?");
-			valueCount ++;
 			getParams().add(object);
 		}
 		builder.append(")");
@@ -664,7 +663,8 @@ public class BuilderImpl implements Builder {
 
 		if(type != null){
 
-			if(type == Type.insert && valueCount != fieldCount){
+			if(type == Type.insert && valueCount == 0){
+				System.out.println("valueCount:" + valueCount + ", fieldCount:" + fieldCount);
 				values(fieldCount);
 			}
 		}

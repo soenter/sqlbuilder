@@ -18,4 +18,11 @@ public class BuilderUtils {
 			}
 		}
 	}
+
+	public static Object[] paramsToArray(BuildResult result){
+		if(result.getParameters() != null){
+			return result.getParameters().toArray();
+		}
+		return null;
+	}
 }

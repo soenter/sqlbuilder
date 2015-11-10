@@ -34,7 +34,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public int insert(BuildResult buildResult) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 		try {
 			return this.getJdbcTemplate().update(sql, params);
 		} catch (DataAccessException e){
@@ -45,7 +45,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public int update(BuildResult buildResult) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 		try {
 			return this.getJdbcTemplate().update(sql, params);
 		} catch (DataAccessException e){
@@ -105,7 +105,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public int delete(BuildResult buildResult) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 		try {
 			return this.getJdbcTemplate().update(sql, params);
 		} catch (DataAccessException e){
@@ -116,7 +116,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public <R extends AbstractPo> R queryForPo (final BuildResult buildResult, final R po) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 
 		try {
 			return this.getJdbcTemplate().queryForObject(sql, params, new RowMapper<R>() {
@@ -137,7 +137,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public <R> R queryFirstColumnForObject (BuildResult buildResult, final Class<R> clazz) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 
 		try {
 			return this.getJdbcTemplate().queryForObject(sql, params, new RowMapper<R>() {
@@ -158,7 +158,7 @@ public class BaseDaoImpl implements BaseDao{
 
 	public <R extends AbstractPo> List<R> queryForPoList (final BuildResult buildResult, final Class<R> clazz) {
 		String sql = buildResult.getSql();
-		Object[] params = buildResult.getParameters().toArray();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
 
 		try {
 			return this.getJdbcTemplate().query(sql, params, new RowMapper<R>() {
@@ -243,7 +243,7 @@ public class BaseDaoImpl implements BaseDao{
 		Builder builder = BuilderFactory.create()
 				.upsertOracle(clazz, setters, filters);
 		BuildResult result = builder.build();
-		return getJdbcTemplate().update(result.getSql(), result.getParameters());
+		return getJdbcTemplate().update(result.getSql(), BuilderUtils.paramsToArray(result));
 	}
 
 	public <R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz) {

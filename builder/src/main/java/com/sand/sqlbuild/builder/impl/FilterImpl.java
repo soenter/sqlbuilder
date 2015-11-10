@@ -67,4 +67,8 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 		return type;
 	}
 
+	@Override
+	public boolean isEmptyValue () {
+		return super.isEmptyValue() && (values == null || values.length == 0);
+	}
 }

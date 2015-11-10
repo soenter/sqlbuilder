@@ -17,8 +17,8 @@ public class PersonTest {
 
 		Builder builder = BuilderFactory.create()
 				.insert(PersonPo.class,
-						PersonPo.name.epv(),
-						PersonPo.age.epv()
+						PersonPo.name.eq("121"),
+						PersonPo.age.eq(11)
 				);
 
 		System.out.println(builder.build().getSql());
