@@ -64,7 +64,7 @@ public class BaseDaoImpl implements BaseDao{
 		for(AbstractPo po: params){
 			Object[] objs = new Object[po.size()];
 
-			int index = 0;
+			int index = 1;
 			for(Field<?> field: emptyFiels){
 				objs[index++] = po.getValue(field);
 			}
@@ -83,7 +83,7 @@ public class BaseDaoImpl implements BaseDao{
 		return this.getJdbcTemplate().batchUpdate(result.getSql(), new BatchPreparedStatementSetter(){
 
 			public void setValues (PreparedStatement ps, int i) throws SQLException {
-				int index = 0;
+				int index = 1;
 				for(Field<?> field: emptyFiels){
 					ps.setObject(index++, poGetter.getPo(i).getValue(field));
 				}

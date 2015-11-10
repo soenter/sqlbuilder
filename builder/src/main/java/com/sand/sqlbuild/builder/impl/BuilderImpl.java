@@ -149,6 +149,8 @@ public class BuilderImpl implements Builder {
 			}
 			if(!lastEmptyValue){
 				values[i] = setters[i].getValue();
+			} else {
+				getEmptyValueFields().add(setters[i].getField());
 			}
 		}
 
@@ -308,17 +310,6 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	public Builder set (Field<?>... fields) {
-		builder.append(" set ");
-		for (int i = 0; i < fields.length; i++){
-			if(i != 0){
-				comma();
-			}
-			builder.append(fields[i].getFullName()).append(" = ?");
-
-		}
-		return this;
-	}
 	/*------------------------------------删除（update）------------------------------------*/
 
 
@@ -664,7 +655,6 @@ public class BuilderImpl implements Builder {
 		if(type != null){
 
 			if(type == Type.insert && valueCount == 0){
-				System.out.println("valueCount:" + valueCount + ", fieldCount:" + fieldCount);
 				values(fieldCount);
 			}
 		}
