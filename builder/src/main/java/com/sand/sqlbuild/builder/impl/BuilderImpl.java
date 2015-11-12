@@ -181,7 +181,10 @@ public class BuilderImpl implements Builder {
 			Field<?> field = filters[i].getField();
 			String incomingFieldName = UPSERT_FILTER_PREFIX + field.getName();
 			incomingSql.append("? ").append(incomingFieldName);
-			insertFieldMap.put(field, incomingFieldName);
+			//只有在filter的operator为“=”时才做insert
+			if("=".equals(filters[i].getOperator().trim())){
+				insertFieldMap.put(field, incomingFieldName);
+			}
 			if(!filters[i].isEmptyValue()){
 				getParams().add(filters[i].getValue());
 			}

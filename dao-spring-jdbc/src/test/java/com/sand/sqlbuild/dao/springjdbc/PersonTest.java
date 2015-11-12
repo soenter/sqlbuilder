@@ -1,7 +1,10 @@
-package com.sand.sqlbuild.builder;
+package com.sand.sqlbuild.dao.springjdbc;
 
+import com.sand.sqlbuild.builder.Builder;
+import com.sand.sqlbuild.builder.Filter;
+import com.sand.sqlbuild.builder.Setter;
 import com.sand.sqlbuild.builder.impl.BuilderFactory;
-import com.sand.sqlbuild.builder.po.PersonPo;
+import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
 import org.junit.Test;
 
 /**
@@ -11,6 +14,7 @@ import org.junit.Test;
  */
 public class PersonTest {
 
+	private BaseDao dao;
 
 	@Test
 	public void test_batch(){

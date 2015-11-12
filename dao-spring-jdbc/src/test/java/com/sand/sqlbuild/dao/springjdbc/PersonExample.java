@@ -1,7 +1,10 @@
-package com.sand.sqlbuild.builder;
+package com.sand.sqlbuild.dao.springjdbc;
 
+import com.sand.sqlbuild.builder.Builder;
+import com.sand.sqlbuild.builder.Filter;
+import com.sand.sqlbuild.builder.Setter;
 import com.sand.sqlbuild.builder.impl.BuilderFactory;
-import com.sand.sqlbuild.builder.po.PersonPo;
+import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
 import org.junit.Test;
 
 /**
@@ -9,11 +12,12 @@ import org.junit.Test;
  * @create : 2015/11/10 10:43
  * @since : 0.1.2
  */
-public class PersonTest {
+public class PersonExample {
 
+	private BaseDao dao;
 
 	@Test
-	public void test_batch(){
+	public void test_select(){
 
 		Builder builder = BuilderFactory.create()
 				.insert(PersonPo.class,
@@ -22,6 +26,7 @@ public class PersonTest {
 				);
 
 		System.out.println(builder.build().getSql());
+		dao.queryForPo(builder.build(), new PersonPo());
 
 
 		Builder builder2 = BuilderFactory.create()

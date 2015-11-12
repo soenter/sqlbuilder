@@ -151,8 +151,10 @@ public class PagingBuilderImpl implements PagingBuilder {
 
 		//where builder
 		builder.append(whereBr.getSql());
-		params.addAll(whereBr.getParameters());
-		
+		if(whereBr.getParameters() != null){
+			params.addAll(whereBr.getParameters());
+		}
+
 		return new BuildResultImpl(builder, params, null, null);
 	}
 
@@ -190,21 +192,29 @@ public class PagingBuilderImpl implements PagingBuilder {
 		
 		//from builder
 		builder.append(fromBr.getSql()).append(" ");
-		params.addAll(fromBr.getParameters());
+		if(fromBr.getParameters() != null){
+			params.addAll(fromBr.getParameters());
+		}
 
 		//where builder
 		builder.append(whereBr.getSql()).append(" ");
-		params.addAll(whereBr.getParameters());
+		if(whereBr.getParameters() != null){
+			params.addAll(whereBr.getParameters());
+		}
 		
 		builder.append(") ");
 		
 		//select builder
 		builder.append(selectBr.getSql()).append(" ");
-		params.addAll(selectBr.getParameters());
+		if(selectBr.getParameters() != null){
+			params.addAll(selectBr.getParameters());
+		}
 		
 		//from
 		builder.append(fromBr.getSql()).append(" ");
-		params.addAll(fromBr.getParameters());
+		if(fromBr.getParameters() != null){
+			params.addAll(fromBr.getParameters());
+		}
 		
 		//inner join rownum_table
 		builder.append("inner join rownum_table on ").append(fromPk.getFullName())
@@ -215,7 +225,9 @@ public class PagingBuilderImpl implements PagingBuilder {
 		
 		//where
 		builder.append(whereBr.getSql()).append(" ");
-		params.addAll(whereBr.getParameters());
+		if(whereBr.getParameters() != null){
+			params.addAll(whereBr.getParameters());
+		}
 		
 		//order 
 		builder.append(orderBr.getSql()).append(" ");
