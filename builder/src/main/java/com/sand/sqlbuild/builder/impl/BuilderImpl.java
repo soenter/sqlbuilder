@@ -407,16 +407,22 @@ public class BuilderImpl implements Builder {
 		}
 	}
 
+	public Builder where () {
+		builder.append(" where ");
+		return this;
+	}
 
 	public Builder where (Filter<?> filter) {
-		builder.append(" where ");
+		where();
 		return filter(filter);
 	}
 
 	public Builder where(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" where ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -433,7 +439,9 @@ public class BuilderImpl implements Builder {
 	public Builder and(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" and ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -445,7 +453,9 @@ public class BuilderImpl implements Builder {
 	public Builder or(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" or ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -667,7 +677,24 @@ public class BuilderImpl implements Builder {
 		//init();
 		return result;
 	}
-	
+
+	public Builder ls (Filter<?> filter) {
+		ls();
+		filter(filter);
+		return this;
+	}
+
+	public Builder rs (Filter<?> filter) {
+		rs();
+		filter(filter);
+		return this;
+	}
+
+	public Builder or () {
+		builder.append(" or ");
+		return this;
+	}
+
 	public enum Type{
 		select,
 		selectAll,

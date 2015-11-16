@@ -10,6 +10,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,6 +23,7 @@ import java.util.*;
  * @create : 2015/9/22 17:50
  * @since : 0.1.1
  */
+@Repository("com.sand.sqlbuild.dao.springjdbc.BaseDaoImpl")
 public class BaseDaoImpl implements BaseDao{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseDaoImpl.class);
@@ -64,7 +67,7 @@ public class BaseDaoImpl implements BaseDao{
 		for(AbstractPo po: params){
 			Object[] objs = new Object[po.size()];
 
-			int index = 1;
+			int index = 0;
 			for(Field<?> field: emptyFiels){
 				objs[index++] = po.getValue(field);
 			}

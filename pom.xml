@@ -6,7 +6,7 @@
 	<groupId>com.sand.sqlbuild</groupId>
 	<artifactId>sqlbuild</artifactId>
 	<packaging>pom</packaging>
-	<version>0.1.5</version>
+	<version>0.1.6</version>
 
 	<modules>
 		<module>builder</module>
@@ -86,6 +86,8 @@
 		<spring.version>3.2.13.RELEASE</spring.version>
 		<slf4j.api.version>1.7.12</slf4j.api.version>
 		<logback.version>1.1.3</logback.version>
+        <oracle.version>0.0.1</oracle.version>
+        <hikaricp.version>2.3.6</hikaricp.version>
 	</properties>
 
 	<dependencies>
@@ -104,16 +106,41 @@
 				<artifactId>spring-jdbc</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.api.version}</version>
-			</dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+                <scope>test</scope>
+            </dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
 				<version>${logback.version}</version>
+                <scope>test</scope>
 			</dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP-java6</artifactId>
+                <version>${hikaricp.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc7</artifactId>
+                <version>${oracle.version}</version>
+                <scope>test</scope>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 
