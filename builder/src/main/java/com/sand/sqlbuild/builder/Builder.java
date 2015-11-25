@@ -27,10 +27,14 @@ public interface Builder {
 	/*------------------------------------插入（insert）------------------------------------*/
 
 	Builder insert (Class<? extends Table> clazz, Field<?>... fields);
+
+	Builder insert(Table table, Field<?>... fields);
 	
 	Builder values (Object... values);
 
 	Builder insert (Class<? extends Table> clazz, Setter<?>... setters);
+
+	Builder insert (Table table, Setter<?>... setters);
 
 	Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters);
 

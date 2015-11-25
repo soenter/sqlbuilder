@@ -67,4 +67,16 @@ public class PersonExample {
 
 	}
 
+
+	@Test
+	public void test_insert_po(){
+
+		PersonPo po = new PersonPo();
+
+		po.setValue(PersonPo.name, "222222222222222222");
+
+		dao.insert(po);
+	}
+
+
 }

@@ -43,6 +43,28 @@ public class BaseDaoImpl implements BaseDao{
 		}
 	}
 
+	public int insert (AbstractPo po) {
+
+		if(po == null || po.isEmpty()){
+			throw new IllegalArgumentException("po 不能为 null 或空");
+		}
+
+		Iterator<Map.Entry<Field<?>, Object>> iterator = po.iterator();
+		Setter<?>[] setters = new Setter[po.size()];
+		int index = 0;
+		while(iterator.hasNext()){
+			Map.Entry<Field<?>, Object> entry = iterator.next();
+			Field field = entry.getKey();
+			setters[index ++] = field.eq(entry.getValue());
+		}
+
+		Builder builder = BuilderFactory.create()
+				.insert(po, setters);
+
+
+		return insert(builder.build());
+	}
+
 	public int update(BuildResult buildResult) {
 		String sql = buildResult.getSql();
 		Object[] params = BuilderUtils.paramsToArray(buildResult);
