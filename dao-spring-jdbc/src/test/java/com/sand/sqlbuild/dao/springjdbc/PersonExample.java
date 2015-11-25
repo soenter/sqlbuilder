@@ -236,16 +236,6 @@ public class PersonExample {
 		System.out.println("批量返回值：" + Arrays.toString(nums));
 	}
 
-	@Test
-	public void test_insert_po(){
-
-		PersonPo po = new PersonPo();
-
-		po.setValue(PersonPo.name, "222222222222222222");
-
-		dao.insert(po);
-	}
-
 
 	@Test
 	/**
@@ -296,5 +286,15 @@ public class PersonExample {
 			}
 		});
 		System.out.println("批量返回值：" + Arrays.toString(nums));
+	}
+
+	@Test
+	public void test_insert_po(){
+
+		PersonPo po = new PersonPo();
+
+		po.setValue(PersonPo.name, "222222222222222222");
+
+		dao.insert(po);
 	}
 }
