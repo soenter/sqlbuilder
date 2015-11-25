@@ -182,7 +182,7 @@ public class PersonExample {
 
 		BuildResult result = builder.build();
 		System.out.println(result.getSql());
-		int num = dao.insert(result);
+		int num = dao.delete(result);
 		System.out.println("删除条数：" + num);
 	}
 
