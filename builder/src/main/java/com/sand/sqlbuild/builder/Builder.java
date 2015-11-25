@@ -89,6 +89,8 @@ public interface Builder {
      */
     Builder from (Class<? extends Table>[] clazzs);
 
+	Builder where ();
+
 	Builder where (Filter<?> filter);
 
 	Builder where (FilterBuilder filterBuilder);
@@ -220,4 +222,11 @@ public interface Builder {
 	 * 从新初始化
 	 */
 	Builder reinit ();
+
+	Builder or();
+
+	Builder rs(Filter<?> filter);
+
+	Builder ls(Filter<?> filter);
+
 }
