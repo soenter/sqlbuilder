@@ -83,11 +83,16 @@ public class BuilderImpl implements Builder {
 			} else {
 				comma();
 			}
-			builder.append(field.getFullName());
-			if(!isUnionFlag){
+			field(field);
+			if(!isUnionFlag) {
 				getSelectFields().add(field);
 			}
 		}
+		return this;
+	}
+
+	private Builder field(Field<?> field) {
+		builder.append(field.getFullName());
 		return this;
 	}
 
@@ -707,6 +712,77 @@ public class BuilderImpl implements Builder {
 
 	public Builder or () {
 		builder.append(" or ");
+		return this;
+	}
+
+	public Builder cases () {
+		builder.append(" case ");
+		return this;
+	}
+
+	public Builder cases (Field<?> field) {
+		cases();
+		return field(field);
+	}
+
+	public Builder when () {
+		builder.append(" when ");
+		return this;
+	}
+
+	public Builder when (Field<?> field) {
+		when();
+		return field(field);
+	}
+
+	public Builder when (Object value) {
+		when();
+		builder.append(" ? ");
+		getParams().add(value);
+		return this;
+	}
+
+	public Builder when (Filter<?> filter) {
+		when();
+		return filter(filter);
+	}
+
+	public Builder then () {
+		builder.append(" then ");
+		return this;
+	}
+
+	public Builder then (Field<?> field) {
+		then();
+		return field(field);
+	}
+
+	public Builder then (Object value) {
+		then();
+		builder.append(" ? ");
+		getParams().add(value);
+		return this;
+	}
+
+	public Builder elses () {
+		builder.append(" else ");
+		return this;
+	}
+
+	public Builder elses (Field<?> field) {
+		elses();
+		return field(field);
+	}
+
+	public Builder elses (Object value) {
+		elses();
+		builder.append(" ? ");
+		getParams().add(value);
+		return this;
+	}
+
+	public Builder end () {
+		builder.append(" end ");
 		return this;
 	}
 

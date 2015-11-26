@@ -289,12 +289,57 @@ public class PersonExample {
 	}
 
 	@Test
+	/**
+	 * insert person(name, email, phone, age) values('tom3', 'tom3@xx.com','13500000003', 22)
+	 */
 	public void test_insert_po(){
 
 		PersonPo po = new PersonPo();
-
-		po.setValue(PersonPo.name, "222222222222222222");
+		po.setValue(PersonPo.name, "tom3");
+		po.setValue(PersonPo.email, "tom3@xx.com");
+		po.setValue(PersonPo.phone, "15000000003");
+		po.setValue(PersonPo.age, 22);
 
 		dao.insert(po);
 	}
+
+
+	@Test
+	/**
+	 * select case name when 'tom1' then '汤姆1' else name end as chineseName,
+	 * case when age < 18 then '未成年'
+	 *      when age between 18 and 45 then '青年'
+	 *      when age > 45 and age < 59 then '中年'
+	 * else '老年' end as ageGroup
+	 * from person
+	 */
+	public void test_case_when(){
+
+		Builder builder = BuilderFactory.create()
+				.select()
+				.cases(PersonPo.name)
+					.when("tom1").then("汤姆1")
+				.elses(PersonPo.name).end().as("chineseName", String.class).comma()
+				.cases()
+					.when(PersonPo.age.lt(18)).then("未成年")
+					.when(PersonPo.age.bta(18, 45)).then("青年")
+					.when(PersonPo.age.gt(45)).and(PersonPo.age.lt(59)).then("中年")
+				.elses("老年").end().as("ageGroup", String.class)
+				.from(PersonPo.class);
+
+		List<PersonPo> pos = dao.queryForPoList(builder.build(), PersonPo.class);
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		System.out.println("----------------取值------------------");
+		for(PersonPo po: pos){
+			System.out.println("chineseName:" + po.getValue("chineseName", Integer.class));
+			System.out.println("ageGroup:" + po.getValue("ageGroup", Integer.class));
+		}
+	}
+
+
 }

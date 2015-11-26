@@ -229,4 +229,30 @@ public interface Builder {
 
 	Builder ls(Filter<?> filter);
 
+	Builder cases();
+
+	Builder cases(Field<?> field);
+
+	Builder when();
+
+	Builder when(Field<?> field);
+
+	Builder when(Object value);
+
+	Builder when(Filter<?> filter);
+
+	Builder then();
+
+	Builder then(Field<?> field);
+
+	Builder then(Object value);
+
+	Builder elses();
+
+	Builder elses(Field<?> field);
+
+	Builder elses(Object value);
+
+	Builder end();
+
 }
