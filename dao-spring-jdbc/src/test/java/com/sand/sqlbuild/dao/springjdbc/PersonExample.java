@@ -13,6 +13,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.DriverManager;
 import java.util.*;
 
 /**
@@ -339,6 +340,9 @@ public class PersonExample {
 			System.out.println("chineseName:" + po.getValue("chineseName", Integer.class));
 			System.out.println("ageGroup:" + po.getValue("ageGroup", Integer.class));
 		}
+
+
+		DriverManager.getDrivers();
 	}
 
 

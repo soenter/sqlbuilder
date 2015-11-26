@@ -117,13 +117,16 @@ public interface BaseDao {
 
 	/**
 	 * 更新或插入(使用 oracle merge into 语法实现 upsert)
-	 *
+	 * @see <code>upsert<code/> method
 	 * @param setters 字段+值设置器组数
 	 * @param filters 字段+值过滤器组数
 	 * @param clazz 表结构的Java对象映射类型（Class）
 	 * @return 受影响数
 	 */
+	@Deprecated
 	<R extends AbstractPo> int upsertOracle(Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz);
+
+	<R extends AbstractPo> int upsert(Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz);
 
 	/**
 	 * 更新

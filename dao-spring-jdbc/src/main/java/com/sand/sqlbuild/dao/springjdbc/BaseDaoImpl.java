@@ -4,18 +4,17 @@ import com.sand.sqlbuild.builder.*;
 import com.sand.sqlbuild.builder.impl.BuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 /**
@@ -24,12 +23,14 @@ import java.util.*;
  * @since : 0.1.1
  */
 @Repository("com.sand.sqlbuild.dao.springjdbc.BaseDaoImpl")
-public class BaseDaoImpl implements BaseDao{
+public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseDaoImpl.class);
 
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
+
+	private DatabaseType databaseType;
 
 	public JdbcTemplate getJdbcTemplate () {
 		return jdbcTemplate;
@@ -271,6 +272,15 @@ public class BaseDaoImpl implements BaseDao{
 		return getJdbcTemplate().update(result.getSql(), BuilderUtils.paramsToArray(result));
 	}
 
+	public <R extends AbstractPo> int upsert (Setter<?>[] setters, Filter<?>[] filters, Class<R> clazz) {
+		if(DatabaseType.ORACLE.equals(databaseType)){
+			return upsertOracle(setters, filters, clazz);
+		} else {
+			//TODO 增加更多数据库upsert方式
+		}
+		return 0;
+	}
+
 	public <R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz) {
 		Builder builder = BuilderFactory.create();
 
@@ -331,6 +341,18 @@ public class BaseDaoImpl implements BaseDao{
 		return queryForPoList(builder.build(), clazz);
 	}
 
+	public void afterPropertiesSet () throws Exception {
+
+		Connection connection = jdbcTemplate.getDataSource().getConnection();
+		try {
+			DatabaseMetaData metaData = connection.getMetaData();
+			databaseType = DatabaseType.fromProductName(metaData.getDatabaseProductName());
+			System.out.println("metaData.getDatabaseProductVersion()===========" + metaData.getDatabaseProductVersion());
+		} finally {
+			DataSourceUtils.releaseConnection(connection, jdbcTemplate.getDataSource());
+		}
+	}
+
 	private void joinFiltersByAnd(Builder builder, Filter<?>[] filters){
 		for(int i = 0; i < filters.length; i++){
 			if(i == 0) {
@@ -350,4 +372,5 @@ public class BaseDaoImpl implements BaseDao{
 			throw new RuntimeException(e);
 		}
 	}
+
 }
