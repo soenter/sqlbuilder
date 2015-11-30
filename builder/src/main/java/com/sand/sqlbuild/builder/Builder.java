@@ -29,7 +29,7 @@ public interface Builder {
 	Builder insert (Class<? extends Table> clazz, Field<?>... fields);
 
 	Builder insert(Table table, Field<?>... fields);
-	
+
 	Builder values (Object... values);
 
 	Builder insert (Class<? extends Table> clazz, Setter<?>... setters);

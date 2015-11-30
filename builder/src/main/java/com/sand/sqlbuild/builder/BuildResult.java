@@ -9,11 +9,7 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public interface BuildResult {
-
-	String getSql ();
-	
-	List<Object> getParameters ();
+public interface BuildResult extends SqlResult{
 	
 	List<Field<?>> getSelectFields ();
 
