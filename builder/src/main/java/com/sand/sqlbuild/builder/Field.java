@@ -52,7 +52,7 @@ public interface Field<T>{
 	 * @return
 	 */
 	Filter<T> eq (T value);
-	
+
 	/**
 	 * 等于（=）
 	 * 

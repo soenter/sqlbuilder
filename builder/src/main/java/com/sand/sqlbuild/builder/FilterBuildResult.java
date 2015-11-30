@@ -9,5 +9,9 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public interface FilterBuildResult extends SqlResult{
+public interface FilterBuildResult {
+
+	String getSql ();
+
+	List<Object> getParameters ();
 }
