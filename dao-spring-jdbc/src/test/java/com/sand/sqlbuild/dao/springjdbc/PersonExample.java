@@ -350,7 +350,7 @@ public class PersonExample {
 	/**
 	 * select name, age
 	 * from person
-	 * where name is not null and email is not null
+	 * where name is not null and email is null
 	 * groug by name
 	 */
 	public void test_select_where_is_null_or_not_null(){
