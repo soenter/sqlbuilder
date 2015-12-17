@@ -346,4 +346,37 @@ public class PersonExample {
 	}
 
 
+	@Test
+	/**
+	 * select name, age
+	 * from person
+	 * where name is not null and email is not null
+	 * groug by name
+	 */
+	public void test_select_where_is_null_or_not_null(){
+		Builder builder = BSQL
+				.select(PersonPo.name, PersonPo.age)
+				.from(PersonPo.class)
+				.where(PersonPo.name.isNotNull())
+				.and(PersonPo.email.isNull());
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("name:" + po.getValue(PersonPo.name));
+			System.out.println("count:" + po.getValue("count", Integer.class));
+			System.out.println("age:" + po.getValue(PersonPo.age));
+		}
+
+	}
+
 }

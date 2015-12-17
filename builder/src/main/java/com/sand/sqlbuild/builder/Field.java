@@ -251,4 +251,17 @@ public interface Field<T>{
 	 * @return
 	 */
 	Filter<?> epv (String operator);
+
+	/**
+	 * is null
+	 * @return
+	 */
+	Filter<?> isNull();
+
+	/**
+	 * is not null
+	 * @return
+	 */
+	Filter<?> isNotNull();
+
 }

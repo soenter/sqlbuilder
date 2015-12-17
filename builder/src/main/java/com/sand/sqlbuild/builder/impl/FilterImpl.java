@@ -22,13 +22,13 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	FilterImpl(Field<T> field, String operator, T value) {
 		super(field, value);
 		this.operator = operator;
-		this.type = Type.ONE;
+		this.type = Type.ONE_VALUE;
 	}
 	
 	FilterImpl(Field<T> field, String operator, Field<T> value) {
 		super(field, value);
 		this.operator = operator;
-		this.type = Type.ONE;
+		this.type = Type.ONE_VALUE;
 	}
 	
 	FilterImpl(Field<T> field, String operator, T[] values, Type type) {
@@ -39,10 +39,10 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	}
 
 
-	FilterImpl(Field<T> field, String operator) {
+	FilterImpl(Field<T> field, String operator, Type type) {
 		super(field, (T)null);
 		this.operator = operator;
-		this.type = Type.ONE;
+		this.type = type;
 	}
 
 

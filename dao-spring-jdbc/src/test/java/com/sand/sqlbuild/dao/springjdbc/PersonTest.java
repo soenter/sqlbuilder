@@ -63,7 +63,6 @@ public class PersonTest {
 
 		System.out.println(builder4.build().getSql());
 
-
 	}
 
 

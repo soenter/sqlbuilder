@@ -490,18 +490,15 @@ public class BuilderImpl implements Builder {
 			if(fieldValue.hasOperator()){
 				builder.append(" ").append(fieldValue.getOperator()).append(" ");
 			}
-		} else if(filter.isEmptyValue()){
-			builder.append(operator).append(" ? ");
-			getEmptyValueFields().add(filter.getField());
 		} else {
-			if(filter.getType() == Filter.Type.ONE){
-				if(null != filter.getValue()){
-					builder.append(operator).append(" ? ");
-					getParams().add(filter.getValue());
+			if(filter.getType() == Filter.Type.ONE_VALUE){
+				builder.append(operator).append(" ? ");
+				if(filter.isEmptyValue()){
+					getEmptyValueFields().add(filter.getField());
 				} else {
-					builder.append(operator).append(" ");
+					getParams().add(filter.getValue());
 				}
-			} else if(filter.getType() == Filter.Type.TWIN){
+			} else if(filter.getType() == Filter.Type.TWIN_VALUES){
 				if(filter.getValues() == null) 
 					throw new IllegalArgumentException("Filter.Type.TWIN时 值对象数组长度必须为2");
 
@@ -510,7 +507,7 @@ public class BuilderImpl implements Builder {
 				getParams().add(filter.getValues()[0]);
 				getParams().add(filter.getValues()[1]);
 				
-			} else if(filter.getType() == Filter.Type.MULTI){
+			} else if(filter.getType() == Filter.Type.MULTI_VALUES){
 				if(filter.getValues() == null) 
 					throw new IllegalArgumentException("Filter.Type.MULTI时值对象数组不能为null");
 				
@@ -526,6 +523,8 @@ public class BuilderImpl implements Builder {
 					getParams().add(value);
 				}
 				builder.append(")");
+			} else if(filter.getType() == Filter.Type.NO_VALUE){
+				builder.append(operator);
 			} else {
 				throw new IllegalArgumentException("Filter.Type 非法");
 			}

@@ -20,10 +20,12 @@ public interface Filter <T> extends Setter<T>{
 	
 	enum Type{
 		/**单值:正常比较（默认）*/
-		ONE,
+		ONE_VALUE,
 		/**双值:between ? and ?*/
-		TWIN,
+		TWIN_VALUES,
 		/**多值（两个以上）:in*/
-		MULTI
+		MULTI_VALUES,
+		/**没有值*/
+		NO_VALUE
 	}
 }
