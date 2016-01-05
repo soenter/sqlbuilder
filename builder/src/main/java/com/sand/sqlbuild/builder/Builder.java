@@ -1,8 +1,6 @@
 package com.sand.sqlbuild.builder;
 
 
-import java.util.List;
-
 /**
  *
  * @author : sun.mt
@@ -141,6 +139,8 @@ public interface Builder {
 	 * @return
 	 */
 	Builder func (String funName);
+
+	//Builder func (String funName, Field<?>... args);
 
 	/**
 	 * 左边括号"("

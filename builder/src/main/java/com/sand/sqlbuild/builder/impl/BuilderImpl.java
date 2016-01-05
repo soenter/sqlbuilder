@@ -84,7 +84,9 @@ public class BuilderImpl implements Builder {
 				comma();
 			}
 			field(field);
-			if(!isUnionFlag) {
+			if(field.getAlias() != null && field.getAliasJavaType() != null){
+				as(field.getAlias(), field.getAliasJavaType());
+			} else if(!isUnionFlag) {
 				getSelectFields().add(field);
 			}
 		}
@@ -93,6 +95,7 @@ public class BuilderImpl implements Builder {
 
 	private Builder field(Field<?> field) {
 		builder.append(field.getFullName());
+		recursionHasOperatorField(field);
 		return this;
 	}
 
@@ -316,11 +319,9 @@ public class BuilderImpl implements Builder {
 				
 				Field<?> fieldValue = setter.getFieldValue();
 				builder.append(setter.getField().getFullName()).append(" = ").append(fieldValue.getFullName());
-				
-				if(fieldValue.hasOperator()){
-					builder.append(" ").append(fieldValue.getOperator()).append(" ?");
-					getParams().add(fieldValue.getOperValue());
-				}
+
+				recursionHasOperatorField(fieldValue);
+
 				
 			} else if(setter.isEmptyValue()){
 				builder.append(setter.getField().getFullName()).append(" = ?");
@@ -331,6 +332,19 @@ public class BuilderImpl implements Builder {
 			}
 		}
 		return this;
+	}
+
+	private void recursionHasOperatorField(Field<?> field){
+		if(field.hasOperator()){
+			builder.append(" ").append(field.getOperator());
+			if(field.getOperField() != null){
+				builder.append(" ").append(field.getOperField().getFullName());
+				recursionHasOperatorField(field.getOperField());
+			} else if(field.getOperValue() != null){
+				builder.append(" ?");
+				getParams().add(field.getOperValue());
+			}
+		}
 	}
 
 	/*------------------------------------删除（update）------------------------------------*/

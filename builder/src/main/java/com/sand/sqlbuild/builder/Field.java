@@ -200,13 +200,58 @@ public interface Field<T>{
 	Field<T> plus (T value);
 
 	/**
+	 * 加 (this + field)
+	 * @param field
+	 * @return
+	 */
+	Field<T> plus (Field<T> field);
+
+	/**
 	 * 减
 	 * this - value
 	 * 
 	 * @return
 	 */
 	Field<T> subtract (T value);
-	
+
+	/**
+	 * 减 (this - field)
+	 * @param field
+	 * @return
+	 */
+	Field<T> subtract (Field<T> field);
+
+	/**
+	 * 乘
+	 * this * value
+	 *
+	 * @return
+	 */
+	Field<T> multiply (T value);
+
+	/**
+	 * 乘 (this * field)
+	 * @param field
+	 * @return
+	 */
+	Field<T> multiply (Field<T> field);
+
+	/**
+	 * 除
+	 * this / value
+	 *
+	 * @return
+	 */
+	Field<T> divide (T value);
+
+	/**
+	 * 除 (this / field)
+	 * @param field
+	 * @return
+	 */
+	Field<T> divide (Field<T> field);
+
+
 	/**
 	 * 获取操作符
 	 * 
@@ -220,7 +265,13 @@ public interface Field<T>{
 	 * @return
 	 */
 	T getOperValue ();
-	
+
+	/**
+	 * 获取操作字段
+	 * @return
+	 */
+	Field<?> getOperField();
+
 	/**
 	 * 获取操作符
 	 * 
@@ -264,4 +315,22 @@ public interface Field<T>{
 	 */
 	Filter<?> isNotNull();
 
+	/**
+	 * 连接
+	 * @param operator
+	 * @param field
+	 * @return
+	 */
+	Field<?> join(String operator, Field<?> field);
+
+	/**
+	 * 别名
+	 * @param alias
+	 * @return
+	 */
+	Field<?> as(String alias, Class<?> asJavaType);
+
+	String getAlias();
+
+	Class<?> getAliasJavaType();
 }

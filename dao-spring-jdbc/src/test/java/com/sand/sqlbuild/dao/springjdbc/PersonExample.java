@@ -13,6 +13,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.sql.DriverManager;
 import java.util.*;
 
@@ -375,6 +376,38 @@ public class PersonExample {
 			System.out.println("name:" + po.getValue(PersonPo.name));
 			System.out.println("count:" + po.getValue("count", Integer.class));
 			System.out.println("age:" + po.getValue(PersonPo.age));
+		}
+
+	}
+
+	@Test
+	/**
+	 * select name || '_' || email, age + age as age1, age + age as age2
+	 * from person
+	 */
+	public void test_select_field_join_field(){
+		Builder builder = BSQL
+				.select(
+						PersonPo.name.join(" || '_' || ", PersonPo.email),
+						PersonPo.age.join("+", PersonPo.age),
+						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
+				)
+				.from(PersonPo.class);
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("name:" + po.getValue(PersonPo.name));
+			System.out.println("age1:" + po.getValue(PersonPo.age));
+			System.out.println("age2:" + po.getValue("age1", Integer.class));
 		}
 
 	}

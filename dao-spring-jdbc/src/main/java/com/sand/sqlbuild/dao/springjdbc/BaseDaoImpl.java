@@ -347,7 +347,6 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 		try {
 			DatabaseMetaData metaData = connection.getMetaData();
 			databaseType = DatabaseType.fromProductName(metaData.getDatabaseProductName());
-			System.out.println("metaData.getDatabaseProductVersion()===========" + metaData.getDatabaseProductVersion());
 		} finally {
 			DataSourceUtils.releaseConnection(connection, jdbcTemplate.getDataSource());
 		}

@@ -21,10 +21,16 @@ public class FieldImpl<T> implements Field<T> {
 	private final String fieldName;
 	
 	private final Class<T> javaType;
-	
+
 	private String operator;
-	
+
 	private T operValue;
+
+	private Field<?> operField;
+
+	private String alias;
+
+	private Class<T> asJavaType;
 	
 	protected FieldImpl(String tableTame, String fieldName, Class<T> javaType){
 		
@@ -52,7 +58,22 @@ public class FieldImpl<T> implements Field<T> {
 		this.operValue = operValue;
 		
 	}
-	
+
+	protected FieldImpl(String tableTame, String fieldName, Class<T> javaType, String operator, Field<?> operField){
+
+		if(null == tableTame || null == fieldName || null== javaType){
+			throw new IllegalArgumentException("FieldImpl参数都不能为null");
+		}
+
+		this.tableTame = tableTame;
+		this.fieldName = fieldName;
+		this.javaType = javaType;
+
+		this.operator = operator;
+		this.operField = operField;
+
+	}
+
 
 	public Class<T> getJavaType() {
 		return javaType;
@@ -246,15 +267,37 @@ public class FieldImpl<T> implements Field<T> {
 		return new FieldImpl<T>(tableTame, fieldName, javaType, "+", value);
 	}
 
+	public Field<T> plus (Field<T> field) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "+", field);
+	}
 
 	public Field<T> subtract(T value) {
 		return new FieldImpl<T>(tableTame, fieldName, javaType, "-", value);
 	}
 
+	public Field<T> subtract (Field<T> field) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "-", field);
+	}
+
+	public Field<T> multiply (T value) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "*", value);
+	}
+
+	public Field<T> multiply (Field<T> field) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "*", field);
+	}
+
+	public Field<T> divide (T value) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "/", value);
+	}
+
+	public Field<T> divide (Field<T> field) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, "/", field);
+	}
 
 	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+			 * @see java.lang.Object#toString()
+			 */
 	@Override
 	public String toString() {
 		return getFullName();
@@ -266,6 +309,10 @@ public class FieldImpl<T> implements Field<T> {
 
 	public T getOperValue() {
 		return this.operValue;
+	}
+
+	public Field<?> getOperField () {
+		return this.operField;
 	}
 
 	public boolean hasOperator() {
@@ -319,5 +366,42 @@ public class FieldImpl<T> implements Field<T> {
 
 	public Filter<?> isNotNull () {
 		return new FilterImpl(this, " is not null ", Filter.Type.NO_VALUE);
+	}
+
+	public Field<?> join (String operator, Field<?> field) {
+		return new FieldImpl<T>(tableTame, fieldName, javaType, operator, field);
+	}
+
+	public Field<?> as (String alias, Class<?> asJavaType) {
+		return new FieldImpl(tableTame, fieldName, javaType)
+				.cloneFrom(this)
+				.setAlias(alias)
+				.setAliasJavaType(asJavaType);
+	}
+
+	public String getAlias () {
+		return alias;
+	}
+
+	public Class<T> getAliasJavaType () {
+		return asJavaType;
+	}
+
+	private FieldImpl<?> setAlias (String alias) {
+		this.alias = alias;
+		return this;
+	}
+
+	public FieldImpl<?> setAliasJavaType (Class<T> asJavaType) {
+		this.asJavaType = asJavaType;
+		return this;
+	}
+
+	private FieldImpl<T> cloneFrom(FieldImpl<T> from){
+		this.operator = from.operator;
+		this.operValue = from.operValue;
+		this.operField = from.operField;
+
+		return this;
 	}
 }
