@@ -342,8 +342,6 @@ public class PersonExample {
 			System.out.println("ageGroup:" + po.getValue("ageGroup", Integer.class));
 		}
 
-
-		DriverManager.getDrivers();
 	}
 
 
@@ -382,13 +380,13 @@ public class PersonExample {
 
 	@Test
 	/**
-	 * select name || '_' || email, age + age as age1, age + age as age2
+	 * select name || '_' || email, age + age as age, age + age as age1
 	 * from person
 	 */
 	public void test_select_field_join_field(){
 		Builder builder = BSQL
 				.select(
-						PersonPo.name.join(" || '_' || ", PersonPo.email),
+						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age),
 						PersonPo.age.join("+", PersonPo.age),
 						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
 				)

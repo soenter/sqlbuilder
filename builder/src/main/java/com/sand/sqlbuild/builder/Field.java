@@ -333,4 +333,6 @@ public interface Field<T>{
 	String getAlias();
 
 	Class<?> getAliasJavaType();
+
+	//TODO 增加 case when 语法
 }
