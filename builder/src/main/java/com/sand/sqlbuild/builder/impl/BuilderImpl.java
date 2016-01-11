@@ -500,10 +500,10 @@ public class BuilderImpl implements Builder {
 			
 			Field<?> fieldValue = filter.getFieldValue();
 			builder.append(operator).append(" ").append(fieldValue.getFullName());
-			
-			if(fieldValue.hasOperator()){
-				builder.append(" ").append(fieldValue.getOperator()).append(" ");
-			}
+			//FIXME why ?
+//			if(fieldValue.hasOperator()){
+//				builder.append(" ").append(fieldValue.getOperator()).append(" ");
+//			}
 		} else {
 			if(filter.getType() == Filter.Type.ONE_VALUE){
 				builder.append(operator).append(" ? ");

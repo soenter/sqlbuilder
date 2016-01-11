@@ -26,6 +26,8 @@ public interface Filter <T> extends Setter<T>{
 		/**多值（两个以上）:in*/
 		MULTI_VALUES,
 		/**没有值*/
-		NO_VALUE
+		NO_VALUE,
+		/**字段值*/
+		FIELD_VALUE
 	}
 }

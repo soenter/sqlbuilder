@@ -117,20 +117,41 @@ public class FieldImpl<T> implements Field<T> {
 		return new FilterImpl<T>(this, "<>", value);
 	}
 
+	public Filter<T> ne (Field<T> field) {
+		return new FilterImpl<T>(this, "<>", field);
+	}
+
 	public Filter<T> gt(T value) {
 		return new FilterImpl<T>(this, ">", value);
+	}
+
+	public Filter<T> gt (Field<T> field) {
+		return new FilterImpl<T>(this, ">", field);
 	}
 
 	public Filter<T> lt(T value) {
 		return new FilterImpl<T>(this, "<", value);
 	}
 
+	public Filter<T> lt (Field<T> field) {
+		return new FilterImpl<T>(this, "<", field);
+	}
+
+
 	public Filter<T> gte(T value) {
 		return new FilterImpl<T>(this, ">=", value);
 	}
 
+	public Filter<T> gte (Field<T> field) {
+		return new FilterImpl<T>(this, ">=", field);
+	}
+
 	public Filter<T> lte(T value) {
 		return new FilterImpl<T>(this, "<=", value);
+	}
+
+	public Filter<T> lte (Field<T> field) {
+		return new FilterImpl<T>(this, "<=", field);
 	}
 
 	@SuppressWarnings("unchecked")

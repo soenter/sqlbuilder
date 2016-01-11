@@ -69,6 +69,8 @@ public interface Field<T>{
 	 */
 	Filter<T> ne (T value);
 
+	Filter<T> ne (Field<T> field);
+
 	/**
 	 * 大于（>）
 	 * 
@@ -76,6 +78,8 @@ public interface Field<T>{
 	 * @return
 	 */
 	Filter<T> gt (T value);
+
+	Filter<T> gt (Field<T> field);
 
 	/**
 	 * 小于（<）
@@ -85,6 +89,8 @@ public interface Field<T>{
 	 */
 	Filter<T> lt (T value);
 
+	Filter<T> lt (Field<T> field);
+
 	/**
 	 * 大于等于（>=）
 	 * 
@@ -93,6 +99,8 @@ public interface Field<T>{
 	 */
 	Filter<T> gte (T value);
 
+	Filter<T> gte (Field<T> field);
+
 	/**
 	 * 小于等于（<=）
 	 * 
@@ -100,6 +108,9 @@ public interface Field<T>{
 	 * @return
 	 */
 	Filter<T> lte (T value);
+
+
+	Filter<T> lte (Field<T> field);
 	
 	
 	/**
