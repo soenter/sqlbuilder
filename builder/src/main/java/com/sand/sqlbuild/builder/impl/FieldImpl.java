@@ -85,10 +85,10 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 	public String getAsName() {
-		String name = tableTame + "_" + fieldName;
+		String name = (tableTame + fieldName).replace("_", "");
 		//oracle 列名称长度不能大于30 FIXME 汉字未处理
 		if(name.length() > 30){
-			return name.substring(0, 30);
+			return name.substring(name.length() - 30);
 		}
 		return name;
 	}
