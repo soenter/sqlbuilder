@@ -88,7 +88,7 @@ public class FieldImpl<T> implements Field<T> {
 		String name = tableTame + "_" + fieldName;
 		//oracle 列名称长度不能大于30 FIXME 汉字未处理
 		if(name.length() > 30){
-			return name.substring(name.length() - 30);
+			return name.substring(0, 30);
 		}
 		return name;
 	}

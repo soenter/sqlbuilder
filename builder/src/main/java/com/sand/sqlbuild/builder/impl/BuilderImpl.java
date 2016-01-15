@@ -799,6 +799,83 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
+	public Builder count (Field<?> field) {
+		builder.append("count(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder countDistinct (Field<?> field) {
+		builder.append("count(distinct ").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder sum (Field<? extends Number> field) {
+		builder.append("sum(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder max (Field<?> field) {
+		builder.append("max(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder min (Field<?> field) {
+		builder.append("min(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder avg (Field<? extends Number> field) {
+		builder.append("avg(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder len (Field<String> field) {
+		builder.append("len(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder mid (Field<String> field, int start, int length) {
+		builder.append("min(")
+					.append(field.getFullName()).append(",")
+					.append(start).append(",")
+					.append(length)
+				.append(")");
+		return this;
+	}
+
+	public Builder ucase (Field<String> field) {
+		builder.append("ucase(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder lcase (Field<String> field) {
+		builder.append("lcase(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder first (Field<String> field) {
+		builder.append("first(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder last (Field<String> field) {
+		builder.append("last(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder round (Field<? extends Number> field, int decimals) {
+		builder.append("round(").append(field.getFullName()).append(")");
+		return this;
+	}
+
+	public Builder format (Field<?> field, String format) {
+		builder.append("format(")
+					.append(field.getFullName()).append(",")
+					.append(format)
+				.append(")");
+		return this;
+	}
+
 	public enum Type{
 		select,
 		selectAll,
@@ -834,4 +911,5 @@ public class BuilderImpl implements Builder {
 		}
 		return selectFields;
 	}
+
 }

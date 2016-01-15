@@ -255,4 +255,76 @@ public interface Builder {
 
 	Builder end();
 
+	Builder count(Field<?> field);
+
+	/**
+	 * COUNT(DISTINCT) 适用于 ORACLE 和 Microsoft SQL Server，但是无法用于 Microsoft Access。
+	 * @param field
+	 * @return
+	 */
+	Builder countDistinct(Field<?> field);
+
+	Builder sum(Field<? extends Number> field);
+
+	Builder max(Field<?> field);
+
+	Builder min(Field<?> field);
+
+	Builder avg(Field<? extends Number> field);
+
+	Builder len(Field<String> field);
+
+	/**
+	 * MID 函数用于从文本字段中提取字符。
+	 * @param field
+	 * @param start 开始位置
+	 * @param length 长度
+	 * @return
+	 */
+	Builder mid(Field<String> field, int start, int length);
+
+	/**
+	 * UCASE 函数把字段的值转换为大写。
+	 * @param field
+	 * @return
+	 */
+	Builder ucase(Field<String> field);
+
+	/**
+	 * LCASE 函数把字段的值转换为小写。
+	 * @param field
+	 * @return
+	 */
+	Builder lcase(Field<String> field);
+
+	/**
+	 * FIRST() 函数返回指定的字段中第一个记录的值。
+	 * @param field
+	 * @return
+	 */
+	Builder first(Field<String> field);
+
+	/**
+	 * LAST() 函数返回指定的字段中最后一个记录的值。
+	 * @param field
+	 * @return
+	 */
+	Builder last(Field<String> field);
+
+	/**
+	 * ROUND 函数用于把数值字段舍入为指定的小数位数。
+	 * @param field 必需。要舍入的字段。
+	 * @param decimals 必需。规定要返回的小数位数。
+	 * @return
+	 */
+	Builder round(Field<? extends Number> field, int decimals);
+
+	/**
+	 * FORMAT 函数用于对字段的显示进行格式化。
+	 * @param field
+	 * @param format
+	 * @return
+	 */
+	Builder format(Field<?> field, String format);
+
 }
