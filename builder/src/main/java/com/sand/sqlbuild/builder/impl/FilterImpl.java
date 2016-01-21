@@ -2,6 +2,7 @@ package com.sand.sqlbuild.builder.impl;
 
 import com.sand.sqlbuild.builder.Field;
 import com.sand.sqlbuild.builder.Filter;
+import com.sand.sqlbuild.builder.ValueType;
 
 /**
  *
@@ -17,32 +18,29 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	
 	private T[] values;
 	
-	private Type type;
-	
+
 	FilterImpl(Field<T> field, String operator, T value) {
 		super(field, value);
 		this.operator = operator;
-		this.type = Type.ONE_VALUE;
 	}
 	
 	FilterImpl(Field<T> field, String operator, Field<T> value) {
 		super(field, value);
 		this.operator = operator;
-		this.type = Type.ONE_VALUE;
 	}
 	
-	FilterImpl(Field<T> field, String operator, T[] values, Type type) {
+	FilterImpl(Field<T> field, String operator, T[] values, ValueType valueType) {
 		super(field, (T)null);
 		this.operator = operator;
 		this.values = values;
-		this.type = type;
+		this.valueType = valueType;
 	}
 
 
-	FilterImpl(Field<T> field, String operator, Type type) {
+	FilterImpl(Field<T> field, String operator, ValueType valueType) {
 		super(field, (T)null);
 		this.operator = operator;
-		this.type = type;
+		this.valueType = valueType;
 	}
 
 
@@ -61,14 +59,14 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getType()
+	 * @see com.sand.abacus.util.data.sqlbuild.Filter#getValueType()
 	 */
-	public Type getType() {
-		return type;
+	public ValueType getValueType () {
+		return valueType;
 	}
 
 	@Override
 	public boolean isEmptyValue () {
-		return super.isEmptyValue() && (values == null || values.length == 0);
+		return valueType == ValueType.EMPTY_VALUE;
 	}
 }

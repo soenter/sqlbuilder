@@ -15,19 +15,6 @@ public interface Filter <T> extends Setter<T>{
 	
 
 	T[] getValues ();
-	
-	Type getType ();
-	
-	enum Type{
-		/**单值:正常比较（默认）*/
-		ONE_VALUE,
-		/**双值:between ? and ?*/
-		TWIN_VALUES,
-		/**多值（两个以上）:in*/
-		MULTI_VALUES,
-		/**没有值*/
-		NO_VALUE,
-		/**字段值*/
-		FIELD_VALUE
-	}
+
+	ValueType getValueType ();
 }

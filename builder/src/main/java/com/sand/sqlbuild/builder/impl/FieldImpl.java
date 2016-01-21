@@ -1,10 +1,7 @@
 package com.sand.sqlbuild.builder.impl;
 
 
-import com.sand.sqlbuild.builder.Field;
-import com.sand.sqlbuild.builder.Filter;
-import com.sand.sqlbuild.builder.Order;
-import com.sand.sqlbuild.builder.Setter;
+import com.sand.sqlbuild.builder.*;
 
 import java.util.List;
 
@@ -186,21 +183,21 @@ public class FieldImpl<T> implements Field<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public Filter<T> in(List<T> list) {
-		return new FilterImpl<T>(this, "in", (T[])list.toArray(), Filter.Type.MULTI_VALUES);
+		return new FilterImpl<T>(this, "in", (T[])list.toArray(), ValueType.MULTI_VALUES);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Field#in(java.lang.Object[])
 	 */
 	public Filter<T> in(T[] values) {
-		return new FilterImpl<T>(this, "in", values, Filter.Type.MULTI_VALUES);
+		return new FilterImpl<T>(this, "in", values, ValueType.MULTI_VALUES);
 	}
 
 	/* (non-Javadoc)
 	 * @see com.sand.abacus.util.data.sqlbuild.Field#nin(java.lang.Object[])
 	 */
 	public Filter<T> nin(T[] values) {
-		return new FilterImpl<T>(this, "not in", values, Filter.Type.MULTI_VALUES);
+		return new FilterImpl<T>(this, "not in", values, ValueType.MULTI_VALUES);
 	}
 
 	/* (non-Javadoc)
@@ -265,7 +262,7 @@ public class FieldImpl<T> implements Field<T> {
 		return new FilterImpl<T>(
 				this, " between ? and ? ", 
 				values, 
-				Filter.Type.TWIN_VALUES);
+				ValueType.TWIN_VALUES);
 	}
 
 	/* (non-Javadoc)
@@ -366,7 +363,7 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 	public Filter<?> epv () {
-		return new FilterImpl(this, "=", Filter.Type.ONE_VALUE);
+		return new FilterImpl(this, "=", ValueType.EMPTY_VALUE);
 	}
 
 	public Filter<?> epv (String operator) {
@@ -378,15 +375,15 @@ public class FieldImpl<T> implements Field<T> {
 			throw new IllegalArgumentException("epv 方法的 operator 暂时不支持 in 语法");
 		}
 
-		return new FilterImpl(this, operator, Filter.Type.ONE_VALUE);
+		return new FilterImpl(this, operator, ValueType.EMPTY_VALUE);
 	}
 
 	public Filter<?> isNull () {
-		return new FilterImpl(this, " is null ", Filter.Type.NO_VALUE);
+		return new FilterImpl(this, " is null ", ValueType.NO_VALUE);
 	}
 
 	public Filter<?> isNotNull () {
-		return new FilterImpl(this, " is not null ", Filter.Type.NO_VALUE);
+		return new FilterImpl(this, " is not null ", ValueType.NO_VALUE);
 	}
 
 	public Field<?> join (String operator, Field<?> field) {

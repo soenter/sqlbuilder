@@ -30,7 +30,7 @@ public class OrderImpl implements Order {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.Order#getType()
+	 * @see com.sand.abacus.util.data.sqlbuild.Order#getValueType()
 	 */
 	public Type getType() {
 		return type;

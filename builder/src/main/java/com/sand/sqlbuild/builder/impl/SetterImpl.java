@@ -15,6 +15,7 @@ package com.sand.sqlbuild.builder.impl;
 
 import com.sand.sqlbuild.builder.Field;
 import com.sand.sqlbuild.builder.Setter;
+import com.sand.sqlbuild.builder.ValueType;
 
 /**
  *
@@ -33,15 +34,19 @@ public class SetterImpl <T> implements Setter<T> {
 	private T value;
 	
 	private Field<T> fieldValue;
+
+	protected ValueType valueType;
 	
 	public SetterImpl(Field<T> field, T value){
 		this.field = field;
 		this.value = value;
+		valueType = ValueType.ONE_VALUE;
 	}
 	
 	public SetterImpl(Field<T> field, Field<T> value){
 		this.field = field;
 		this.fieldValue = value;
+		valueType = ValueType.FIELD_VALUE;
 	}
 
 	/* (non-Javadoc)
@@ -63,10 +68,10 @@ public class SetterImpl <T> implements Setter<T> {
 	}
 
 	public boolean isFieldValue() {
-		return fieldValue != null;
+		return valueType == ValueType.FIELD_VALUE;
 	}
 
 	public boolean isEmptyValue () {
-		return fieldValue == null && value == null;
+		return valueType == ValueType.NO_VALUE;
 	}
 }

@@ -505,25 +505,25 @@ public class BuilderImpl implements Builder {
 //				builder.append(" ").append(fieldValue.getOperator()).append(" ");
 //			}
 		} else {
-			if(filter.getType() == Filter.Type.ONE_VALUE){
+			if(filter.getValueType() == ValueType.ONE_VALUE || filter.isEmptyValue()){
 				builder.append(operator).append(" ? ");
 				if(filter.isEmptyValue()){
 					getEmptyValueFields().add(filter.getField());
 				} else {
 					getParams().add(filter.getValue());
 				}
-			} else if(filter.getType() == Filter.Type.TWIN_VALUES){
+			} else if(filter.getValueType() == ValueType.TWIN_VALUES){
 				if(filter.getValues() == null) 
-					throw new IllegalArgumentException("Filter.Type.TWIN时 值对象数组长度必须为2");
+					throw new IllegalArgumentException("ValueType.TWIN时 值对象数组长度必须为2");
 
 				builder.append(operator).append(" ");
 				
 				getParams().add(filter.getValues()[0]);
 				getParams().add(filter.getValues()[1]);
 				
-			} else if(filter.getType() == Filter.Type.MULTI_VALUES){
+			} else if(filter.getValueType() == ValueType.MULTI_VALUES){
 				if(filter.getValues() == null) 
-					throw new IllegalArgumentException("Filter.Type.MULTI时值对象数组不能为null");
+					throw new IllegalArgumentException("ValueType.MULTI时值对象数组不能为null");
 				
 				boolean isFirst = true;
 				builder.append(operator).append(" (");
@@ -537,10 +537,10 @@ public class BuilderImpl implements Builder {
 					getParams().add(value);
 				}
 				builder.append(")");
-			} else if(filter.getType() == Filter.Type.NO_VALUE){
+			} else if(filter.getValueType() == ValueType.NO_VALUE){
 				builder.append(operator);
 			} else {
-				throw new IllegalArgumentException("Filter.Type 非法");
+				throw new IllegalArgumentException("ValueType 非法");
 			}
 			
 		}
