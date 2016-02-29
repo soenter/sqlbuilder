@@ -442,4 +442,39 @@ public class PersonExample {
 		}
 
 	}
+	@Test
+	/**
+	 * select name || '_' || email, age + age as age, age + age as age1
+	 * from person
+	 * where age + 1 > 20
+	 * or age + age > 40
+	 */
+	public void test_filter_with_fields(){
+		Builder builder = BSQL
+				.select(
+						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age),
+						PersonPo.age.join("+", PersonPo.age),
+						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
+				)
+				.from(PersonPo.class)
+				.where(PersonPo.age.plus(1).gt(20))
+				.and(PersonPo.age.plus(PersonPo.age).gt(40));
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("name:" + po.getValue(PersonPo.name));
+			System.out.println("age1:" + po.getValue(PersonPo.age));
+			System.out.println("age2:" + po.getValue("age1", Integer.class));
+		}
+
+	}
 }

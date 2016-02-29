@@ -495,6 +495,7 @@ public class BuilderImpl implements Builder {
 
 	private Builder filter(Filter<?> filter){
 		builder.append(filter.getField().getFullName()).append(" ");
+		recursionHasOperatorField(filter.getField());
 		String operator = filter.getOperator();
 		if(filter.isFieldValue()){
 			
