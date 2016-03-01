@@ -5,11 +5,10 @@
     <parent>
         <groupId>com.sand.sqlbuild</groupId>
         <artifactId>sqlbuild</artifactId>
-        <version>0.1.5</version>
+        <version>0.1.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>builder</artifactId>
-
 
 </project>

@@ -27,10 +27,14 @@ public interface Builder {
 	/*------------------------------------插入（insert）------------------------------------*/
 
 	Builder insert (Class<? extends Table> clazz, Field<?>... fields);
+
+	Builder insert(Table table, Field<?>... fields);
 	
 	Builder values (Object... values);
 
 	Builder insert (Class<? extends Table> clazz, Setter<?>... setters);
+
+	Builder insert (Table table, Setter<?>... setters);
 
 	Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters);
 
@@ -84,6 +88,8 @@ public interface Builder {
      * @return
      */
     Builder from (Class<? extends Table>[] clazzs);
+
+	Builder where ();
 
 	Builder where (Filter<?> filter);
 
@@ -216,4 +222,11 @@ public interface Builder {
 	 * 从新初始化
 	 */
 	Builder reinit ();
+
+	Builder or();
+
+	Builder rs(Filter<?> filter);
+
+	Builder ls(Filter<?> filter);
+
 }

@@ -10,6 +10,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,6 +23,7 @@ import java.util.*;
  * @create : 2015/9/22 17:50
  * @since : 0.1.1
  */
+@Repository("com.sand.sqlbuild.dao.springjdbc.BaseDaoImpl")
 public class BaseDaoImpl implements BaseDao{
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseDaoImpl.class);
@@ -41,6 +44,28 @@ public class BaseDaoImpl implements BaseDao{
 			LOGGER.error("data access exceptions parameters : {}", Arrays.toString(params));
 			throw e;
 		}
+	}
+
+	public int insert (AbstractPo po) {
+
+		if(po == null || po.isEmpty()){
+			throw new IllegalArgumentException("po 不能为 null 或空");
+		}
+
+		Iterator<Map.Entry<Field<?>, Object>> iterator = po.iterator();
+		Setter<?>[] setters = new Setter[po.size()];
+		int index = 0;
+		while(iterator.hasNext()){
+			Map.Entry<Field<?>, Object> entry = iterator.next();
+			Field field = entry.getKey();
+			setters[index ++] = field.eq(entry.getValue());
+		}
+
+		Builder builder = BuilderFactory.create()
+				.insert(po, setters);
+
+
+		return insert(builder.build());
 	}
 
 	public int update(BuildResult buildResult) {
@@ -64,7 +89,7 @@ public class BaseDaoImpl implements BaseDao{
 		for(AbstractPo po: params){
 			Object[] objs = new Object[po.size()];
 
-			int index = 1;
+			int index = 0;
 			for(Field<?> field: emptyFiels){
 				objs[index++] = po.getValue(field);
 			}

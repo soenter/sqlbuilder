@@ -27,6 +27,14 @@ public interface BaseDao {
 	int insert(BuildResult buildResult);
 
 	/**
+	 * 插入
+	 *
+	 * @param po po对象不能为空
+	 * @return 受影响数
+	 */
+	int insert(AbstractPo po);
+
+	/**
 	 * 修改
 	 *
 	 * @param buildResult Builder构建后的结果对象

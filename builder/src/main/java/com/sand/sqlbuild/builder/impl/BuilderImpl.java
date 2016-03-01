@@ -98,11 +98,18 @@ public class BuilderImpl implements Builder {
 
 	/*------------------------------------插入（insert）------------------------------------*/
 
-
 	public Builder insert(Class<? extends Table> clazz, Field<?>... fields) {
-		type = Type.insert;
 		Table table = newTable(clazz);
-		builder.append("insert into ").append(table.getName()).append("(");
+		return insert(table.getName(), fields);
+	}
+
+	public Builder insert(Table table, Field<?>... fields) {
+		return insert(table.getName(), fields);
+	}
+
+	private Builder insert(String name, Field<?>... fields) {
+		type = Type.insert;
+		builder.append("insert into ").append(name).append("(");
 		fields(fields);
 		builder.append(")");
 		return this;
@@ -134,6 +141,14 @@ public class BuilderImpl implements Builder {
 	}
 
 	public Builder insert (Class<? extends Table> clazz, Setter<?>... setters) {
+		return insert(newTable(clazz).getName(), setters);
+	}
+
+	public Builder insert (Table table, Setter<?>... setters) {
+		return insert(table.getName(), setters);
+	}
+
+	public Builder insert (String tableName, Setter<?>... setters) {
 
 		Field<?>[] fields = new Field<?>[setters.length];
 		Object[] values = new Object[setters.length];
@@ -155,9 +170,9 @@ public class BuilderImpl implements Builder {
 		}
 
 		if (lastEmptyValue){
-			return insert(clazz, fields);
+			return insert(tableName, fields);
 		} else {
-			return insert(clazz, fields).values(values);
+			return insert(tableName, fields).values(values);
 		}
 
 	}
@@ -407,16 +422,22 @@ public class BuilderImpl implements Builder {
 		}
 	}
 
+	public Builder where () {
+		builder.append(" where ");
+		return this;
+	}
 
 	public Builder where (Filter<?> filter) {
-		builder.append(" where ");
+		where();
 		return filter(filter);
 	}
 
 	public Builder where(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" where ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -433,7 +454,9 @@ public class BuilderImpl implements Builder {
 	public Builder and(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" and ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -445,7 +468,9 @@ public class BuilderImpl implements Builder {
 	public Builder or(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" or ").append(fbr.getSql());
-		getParams().addAll(fbr.getParameters());
+		if(fbr.getParameters() != null){
+			getParams().addAll(fbr.getParameters());
+		}
 		return this;
 	}
 
@@ -667,7 +692,24 @@ public class BuilderImpl implements Builder {
 		//init();
 		return result;
 	}
-	
+
+	public Builder ls (Filter<?> filter) {
+		ls();
+		filter(filter);
+		return this;
+	}
+
+	public Builder rs (Filter<?> filter) {
+		rs();
+		filter(filter);
+		return this;
+	}
+
+	public Builder or () {
+		builder.append(" or ");
+		return this;
+	}
+
 	public enum Type{
 		select,
 		selectAll,
