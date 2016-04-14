@@ -277,8 +277,8 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 			return upsertOracle(setters, filters, clazz);
 		} else {
 			//TODO 增加更多数据库upsert方式
+			throw new IllegalArgumentException("不支持数据库: [" + databaseType.getProductName() + " ] 做 upsert 操作");
 		}
-		return 0;
 	}
 
 	public <R extends AbstractPo> int delete(Filter<?>[] filters, Class<R> clazz) {
