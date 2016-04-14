@@ -11,11 +11,11 @@ import java.util.Map;
 public enum DatabaseType {
 
 	//DERBY("Apache Derby"),
-	//DB2("DB2"),
+	DB2("DB2"),
 	//DB2ZOS("DB2ZOS"),
 	//HSQL("HSQL Database Engine"),
-	//SQLSERVER("Microsoft SQL Server"),
-	//MYSQL("MySQL"),
+	SQLSERVER("Microsoft SQL Server"),
+	MYSQL("MySQL"),
 	ORACLE("Oracle");
 	//POSTGRES("PostgreSQL"),
 	//SYBASE("Sybase"),
