@@ -214,7 +214,7 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 		int index = 1;
 		for (Field<?> field : fields) {
-			//FIXME 此语法仅在Java 1.7和ojdbc7及以上版本支持
+			//FIXME 此语法仅在Java 1.7和ojdbc7及以上版本支持,mysql-connector-java版本大于等于5.1.21
 			po.setValueWithoutTypecheck(field, rs.getObject(index, field.getJavaType()));
 			index ++;
 			/*if(field.getJavaType().equals(Integer.class)){
