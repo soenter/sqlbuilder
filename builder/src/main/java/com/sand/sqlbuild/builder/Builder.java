@@ -91,16 +91,19 @@ public interface Builder {
 
 	Builder where (Filter<?> filter);
 
+	@Deprecated
 	Builder where (FilterBuilder filterBuilder);
 	
 	Builder and ();
 	
 	Builder and (Filter<?> filter);
-	
+
+	@Deprecated
 	Builder and (FilterBuilder filterBuilder);
 	
 	Builder or (Filter<?> filter);
-	
+
+	@Deprecated
 	Builder or (FilterBuilder filterBuilder);
 	
 	Builder orderBy (Order... orders);
@@ -114,6 +117,14 @@ public interface Builder {
 	 * @return
 	 */
 	Builder limit (int limit);
+
+	/**
+	 * Mysql 语法
+	 * @param limitStart
+	 * @param limitEnd
+	 * @return
+	 */
+	Builder limit (int limitStart, int limitEnd);
 	
 	/**
 	 * SQL Server 语法

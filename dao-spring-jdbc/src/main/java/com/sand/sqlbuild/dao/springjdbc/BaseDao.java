@@ -197,4 +197,25 @@ public interface BaseDao {
 	 */
 	<R extends AbstractPo> List<R> queryForPoList (Field<?>[] fields, FilterBuilder filterBuilder, Class<R> clazz);
 
+
+	/**
+	 * 查询分页总数
+	 * @param builder
+	 * @return
+	 */
+	long queryForPagingCount (PagingBuilder builder);
+
+	/**
+	 * 分页查询多条，并映射成List Java对象集合
+	 * @param builder 分页查询Builder
+	 * @param clazz Po类
+	 * @param pagingStart 开始页数
+	 * @param pagingEnd 结束页数
+	 * @param pagingLimit 每页限制
+	 * @param <R>
+	 * @return
+	 */
+	<R extends AbstractPo> List<R> queryForPagingPoList (PagingBuilder builder, Class<R> clazz, int pagingStart, int pagingEnd, int pagingLimit);
+
+
 }

@@ -18,8 +18,8 @@ public class PagingBuilderImpl implements PagingBuilder {
 	private Builder fromBuilder;
 	private Builder whereBuilder;
 	private Builder orderBuilder;
-	private StringBuilder builder;
-	
+	private Builder groupbyBuilder;
+
 	private BuildResult selectBr;
 	private BuildResult fromBr;
 	private BuildResult whereBr;
@@ -38,7 +38,8 @@ public class PagingBuilderImpl implements PagingBuilder {
 		fromBuilder = BuilderFactory.create();
 		whereBuilder = BuilderFactory.create();
 		orderBuilder = BuilderFactory.create();
-		
+		groupbyBuilder = BuilderFactory.create();
+
 		selectBr = null;
 		fromBr = null;
 		whereBr = null;
@@ -60,6 +61,11 @@ public class PagingBuilderImpl implements PagingBuilder {
 	public PagingBuilder from(Class<? extends Table> clazz, Field<?> pk) {
 		fromBuilder.from(clazz);
 		fromPk = pk;
+		return this;
+	}
+
+	public PagingBuilder from(Class<? extends Table> clazz) {
+		fromBuilder.from(clazz);
 		return this;
 	}
 
@@ -141,7 +147,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	public BuildResult buildPagingCount() {
 		//构建结果
 		buildResult();
-		builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		params = new ArrayList<Object>();
 		
 		builder.append("select count(*) ");
@@ -158,10 +164,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 		return new BuildResultImpl(builder, params, null, null);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingList()
-	 */
-	public BuildResult buildPagingList(int pageStart, int pageEnd, int pageLimit) {
+	private void checkPageArgs(int pageStart, int pageEnd, int pageLimit){
 		if(pageStart < 1){
 			throw new IllegalArgumentException("分页开始数不能小于1");
 		}
@@ -171,11 +174,18 @@ public class PagingBuilderImpl implements PagingBuilder {
 		if(pageLimit < 1){
 			throw new IllegalArgumentException("分页限制数不能小于1");
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingList()
+	 */
+	public BuildResult buildPagingList(int pageStart, int pageEnd, int pageLimit) {
+		checkPageArgs(pageStart, pageEnd, pageLimit);
 		pageStart = pageStart - 1;
 		pageEnd = pageEnd - 1;
 		//构建结果
 		buildResult();
-		builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder();
 		params = new ArrayList<Object>();
 		
 		builder.append("with rownum_table as ( select row_number() over( ");
@@ -185,7 +195,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 		builder.append(") rownum_table_rn , ");
 		
 		if(fromPk == null){
-			throw new IllegalArgumentException("from 方法中传入的pk字段不能为null");
+			throw new IllegalArgumentException("oracle 分页查询 from 方法中传入的pk字段不能为null");
 		}
 		
 		builder.append(fromPk.getFullName()).append(" ");
@@ -231,10 +241,81 @@ public class PagingBuilderImpl implements PagingBuilder {
 		
 		//order 
 		builder.append(orderBr.getSql()).append(" ");
-		
+
 		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
 	}
-	
+
+	public PagingBuilder groupBy (Field<?>... fields) {
+		groupbyBuilder.groupBy(fields);
+		return this;
+	}
+
+	public PagingBuilder limit (int limit) {
+		whereBuilder.limit(limit);
+		return this;
+	}
+
+	public PagingBuilder rownum (int rownum) {
+		whereBuilder.rownum(rownum);
+		return this;
+	}
+
+	public PagingBuilder ls () {
+		whereBuilder.ls();
+		return this;
+	}
+
+	public PagingBuilder rs () {
+		whereBuilder.rs();
+		return this;
+	}
+
+	public PagingBuilder rs (Filter<?> filter) {
+		whereBuilder.rs(filter);
+		return this;
+	}
+
+	public PagingBuilder ls (Filter<?> filter) {
+		whereBuilder.ls(filter);
+		return this;
+	}
+
+	public BuildResult buildMySqlPagingList (int pageStart, int pageEnd, int pageLimit) {
+		checkPageArgs(pageStart, pageEnd, pageLimit);
+		pageStart = pageStart - 1;
+		pageEnd = pageEnd - 1;
+		//构建结果
+		buildResult();
+		StringBuilder builder = new StringBuilder();
+		params = new ArrayList<Object>();
+
+		//select builder
+		builder.append(selectBr.getSql()).append(" ");
+		if(selectBr.getParameters() != null){
+			params.addAll(selectBr.getParameters());
+		}
+
+		//from
+		builder.append(fromBr.getSql()).append(" ");
+		if(fromBr.getParameters() != null){
+			params.addAll(fromBr.getParameters());
+		}
+
+		//where
+		builder.append(whereBr.getSql()).append(" ");
+		if(whereBr.getParameters() != null){
+			params.addAll(whereBr.getParameters());
+		}
+
+		//order
+		builder.append(orderBr.getSql()).append(" ");
+
+		// limit
+		builder.append("limit ").append(pageStart * pageLimit).append(", ").append(pageEnd * pageLimit);
+		System.out.println("mysql sql:" + builder.toString());
+		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
+	}
+
 	private void buildResult(){
 		if(selectBr == null){
 			selectBr = selectBuilder.build();

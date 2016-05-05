@@ -2,6 +2,7 @@ package com.sand.sqlbuild.dao.springjdbc;
 
 import com.sand.sqlbuild.builder.*;
 import com.sand.sqlbuild.builder.impl.BuilderFactory;
+import com.sand.sqlbuild.builder.impl.PagingBuilderFactory;
 import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -476,5 +477,27 @@ public class PersonExample {
 			System.out.println("age2:" + po.getValue("age1", Integer.class));
 		}
 
+	}
+
+	@Test
+	public void test_mysql_paging(){
+		PagingBuilder builder = PagingBuilderFactory.create()
+				.select(PersonPo.all)
+				.from(PersonPo.class)
+				.where(PersonPo.age.gt(1))
+				.orderBy(PersonPo.name.asc());
+
+
+		long count = dao.queryForPagingCount(builder);
+
+		System.out.println("分页总条数：" + count);
+
+		List<PersonPo> pos = dao.queryForPagingPoList(builder, PersonPo.class, 1, 2, 1);
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("name:" + po.getValue(PersonPo.name));
+			System.out.println("age1:" + po.getValue(PersonPo.age));
+			System.out.println("age2:" + po.getValue("age1", Integer.class));
+		}
 	}
 }

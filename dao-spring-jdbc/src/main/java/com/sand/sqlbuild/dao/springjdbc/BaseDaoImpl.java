@@ -341,6 +341,24 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 		return queryForPoList(builder.build(), clazz);
 	}
 
+	public long queryForPagingCount (PagingBuilder builder) {
+		BuildResult result = builder.buildPagingCount();
+		return queryFirstColumnForObject(result, Long.class);
+	}
+
+	public <R extends AbstractPo> List<R> queryForPagingPoList (PagingBuilder builder, Class<R> clazz, int pagingStart, int pagingEnd, int pagingLimit) {
+		BuildResult result = null;
+		if(databaseType == DatabaseType.ORACLE){
+			result = builder.buildPagingList(pagingStart, pagingEnd, pagingLimit);
+		} else if(databaseType == DatabaseType.MYSQL){
+			result = builder.buildMySqlPagingList(pagingStart, pagingEnd, pagingLimit);
+		} else {
+			throw new IllegalArgumentException("Query paging list not support database type [" + databaseType + "]");
+		}
+
+		return queryForPoList(result, clazz);
+	}
+
 	public void afterPropertiesSet () throws Exception {
 
 		Connection connection = jdbcTemplate.getDataSource().getConnection();

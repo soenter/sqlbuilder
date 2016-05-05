@@ -591,6 +591,11 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
+	public Builder limit (int limitStart, int limitEnd) {
+		builder.append(" limit ").append(limitStart).append(", ").append(limitEnd).append(" ");
+		return this;
+	}
+
 	public Builder top(int top) {
 		builder.append(" top ").append(top);
 		return this;
