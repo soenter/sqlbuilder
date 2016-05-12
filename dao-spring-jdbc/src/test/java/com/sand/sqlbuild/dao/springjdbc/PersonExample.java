@@ -137,7 +137,7 @@ public class PersonExample {
 				.update(PersonPo.class)
 				.set(new Setter[]{
 						PersonPo.phone.eq("13500000001"),
-						PersonPo.age.eq(23)
+						PersonPo.age.eq(PersonPo.age.plus(23))
 				})
 				.where(PersonPo.name.eq("tom"));
 
@@ -387,7 +387,7 @@ public class PersonExample {
 	public void test_select_field_join_field(){
 		Builder builder = BSQL
 				.select(
-						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age),
+						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age).as(PersonPo.name),
 						PersonPo.age.join("+", PersonPo.age),
 						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
 				)
@@ -419,7 +419,7 @@ public class PersonExample {
 	public void test_filter_with_field(){
 		Builder builder = BSQL
 				.select(
-						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age),
+						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age).as(PersonPo.name),
 						PersonPo.age.join("+", PersonPo.age),
 						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
 				)
@@ -453,7 +453,8 @@ public class PersonExample {
 	public void test_filter_with_fields(){
 		Builder builder = BSQL
 				.select(
-						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age),
+//						PersonPo.name,
+						PersonPo.name.join(" || '_' || ", PersonPo.email).join(" || '_' || ", PersonPo.age).as(PersonPo.name),
 						PersonPo.age.join("+", PersonPo.age),
 						PersonPo.age.plus(PersonPo.age).as("age1", Integer.class)
 				)
@@ -499,5 +500,67 @@ public class PersonExample {
 			System.out.println("age1:" + po.getValue(PersonPo.age));
 			System.out.println("age2:" + po.getValue("age1", Integer.class));
 		}
+	}
+
+	@Test
+	/**
+	 * select name
+	 * from person
+	 * where like '%om%'
+	 */
+	public void test_jointer_with_like(){
+		Builder builder = BSQL
+				.select(
+						PersonPo.name
+				)
+				.from(PersonPo.class)
+				.where(PersonPo.name.lk("om"));
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("name:" + po.getValue(PersonPo.name));
+		}
+
+	}
+
+	@Test
+	/**
+	 * select name
+	 * from person
+	 * where like '%om%'
+	 */
+	public void test_jointer_(){
+		Builder builder = BSQL
+				.select(
+						PersonPo.age.subtract(PersonPo.age.plus(PersonPo.age)),
+						PersonPo.age.subtract(PersonPo.age).plus(PersonPo.age).as("age2", Integer.class)
+				)
+				.from(PersonPo.class)
+				.where(PersonPo.age.bta(1, 22));
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("age:" + po.getValue(PersonPo.age));
+			System.out.println("age2:" + po.getValue("age2", Integer.class));
+		}
+
 	}
 }

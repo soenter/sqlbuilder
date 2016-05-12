@@ -14,11 +14,11 @@ public interface Builder {
 	
 	Builder select ();
 	
-	Builder select (Field<?>... fields);
+	Builder select (Fieldable... fields);
 	
 	Builder distinct ();
 
-	Builder fields (Field<?>... fields);
+	Builder fields (Fieldable... fields);
 	
 	//Builder all();
 
@@ -91,6 +91,8 @@ public interface Builder {
 
 	Builder where (Filter<?> filter);
 
+	Builder where (Jointer jointer);
+
 	@Deprecated
 	Builder where (FilterBuilder filterBuilder);
 	
@@ -98,17 +100,21 @@ public interface Builder {
 	
 	Builder and (Filter<?> filter);
 
+	Builder and (Jointer jointer);
+
 	@Deprecated
 	Builder and (FilterBuilder filterBuilder);
 	
 	Builder or (Filter<?> filter);
+
+	Builder or (Jointer jointer);
 
 	@Deprecated
 	Builder or (FilterBuilder filterBuilder);
 	
 	Builder orderBy (Order... orders);
 	
-	Builder groupBy (Field<?>... fields);
+	Builder groupBy (Fieldable... fields);
 
 	/**
 	 * Mysql 语法
@@ -167,7 +173,7 @@ public interface Builder {
 	 * @param fields
 	 * @return
 	 */
-	Builder args (Field<?>... fields);
+	Builder args (Fieldable... fields);
 	
 	/**
 	 * 右边括号")"
@@ -238,11 +244,17 @@ public interface Builder {
 
 	Builder rs(Filter<?> filter);
 
+	Builder rs(Jointer jointer);
+
 	Builder ls(Filter<?> filter);
+
+	Builder ls(Jointer jointer);
 
 	Builder cases();
 
 	Builder cases(Field<?> field);
+
+	Builder cases(Jointer jointer);
 
 	Builder when();
 
@@ -252,17 +264,23 @@ public interface Builder {
 
 	Builder when(Filter<?> filter);
 
+	Builder when(Jointer jointer);
+
 	Builder then();
 
 	Builder then(Field<?> field);
 
 	Builder then(Object value);
 
+	Builder then(Jointer jointer);
+
 	Builder elses();
 
 	Builder elses(Field<?> field);
 
 	Builder elses(Object value);
+
+	Builder elses(Jointer jointer);
 
 	Builder end();
 
@@ -275,15 +293,15 @@ public interface Builder {
 	 */
 	Builder countDistinct(Field<?> field);
 
-	Builder sum(Field<? extends Number> field);
+	Builder sum(Fieldable field);
 
-	Builder max(Field<?> field);
+	Builder max(Fieldable field);
 
-	Builder min(Field<?> field);
+	Builder min(Fieldable field);
 
-	Builder avg(Field<? extends Number> field);
+	Builder avg(Fieldable field);
 
-	Builder len(Field<String> field);
+	Builder len(Fieldable field);
 
 	/**
 	 * MID 函数用于从文本字段中提取字符。
@@ -292,35 +310,35 @@ public interface Builder {
 	 * @param length 长度
 	 * @return
 	 */
-	Builder mid(Field<String> field, int start, int length);
+	Builder mid(Fieldable field, int start, int length);
 
 	/**
 	 * UCASE 函数把字段的值转换为大写。
 	 * @param field
 	 * @return
 	 */
-	Builder ucase(Field<String> field);
+	Builder ucase(Fieldable field);
 
 	/**
 	 * LCASE 函数把字段的值转换为小写。
 	 * @param field
 	 * @return
 	 */
-	Builder lcase(Field<String> field);
+	Builder lcase(Fieldable field);
 
 	/**
 	 * FIRST() 函数返回指定的字段中第一个记录的值。
 	 * @param field
 	 * @return
 	 */
-	Builder first(Field<String> field);
+	Builder first(Fieldable field);
 
 	/**
 	 * LAST() 函数返回指定的字段中最后一个记录的值。
 	 * @param field
 	 * @return
 	 */
-	Builder last(Field<String> field);
+	Builder last(Fieldable field);
 
 	/**
 	 * ROUND 函数用于把数值字段舍入为指定的小数位数。
@@ -328,7 +346,7 @@ public interface Builder {
 	 * @param decimals 必需。规定要返回的小数位数。
 	 * @return
 	 */
-	Builder round(Field<? extends Number> field, int decimals);
+	Builder round(Fieldable field, int decimals);
 
 	/**
 	 * FORMAT 函数用于对字段的显示进行格式化。
@@ -336,6 +354,6 @@ public interface Builder {
 	 * @param format
 	 * @return
 	 */
-	Builder format(Field<?> field, String format);
+	Builder format(Fieldable field, String format);
 
 }

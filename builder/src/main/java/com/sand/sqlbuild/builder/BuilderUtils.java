@@ -23,7 +23,7 @@ public class BuilderUtils {
 		if(result.getParameters() != null){
 			return result.getParameters().toArray();
 		}
-		return null;
+		return new Object[0];
 	}
 
 

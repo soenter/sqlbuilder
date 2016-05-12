@@ -1,8 +1,6 @@
 package com.sand.sqlbuild.builder.impl;
 
-import com.sand.sqlbuild.builder.Field;
-import com.sand.sqlbuild.builder.Filter;
-import com.sand.sqlbuild.builder.ValueType;
+import com.sand.sqlbuild.builder.*;
 
 /**
  *
@@ -24,8 +22,8 @@ public class FilterImpl<T> extends SetterImpl<T> implements Filter<T> {
 		this.operator = operator;
 	}
 	
-	FilterImpl(Field<T> field, String operator, Field<T> value) {
-		super(field, value);
+	FilterImpl(Field<T> field, String operator, Fieldable fieldable) {
+		super(field, fieldable);
 		this.operator = operator;
 	}
 	

@@ -7,13 +7,13 @@ package com.sand.sqlbuild.builder;
  * @since 1.0.0
  *
  */
-public interface Setter <T>{
+public interface Setter <T> {
 
 	Field<T> getField ();
 	
 	T getValue ();
-	
-	Field<T> getFieldValue ();
+
+	Fieldable getFieldable ();
 	
 	boolean isFieldValue ();
 

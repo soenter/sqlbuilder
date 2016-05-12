@@ -67,35 +67,67 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 	
-	public Builder select(Field<?>... fields) {
+	public Builder select(Fieldable... fields) {
 		select();
 		fields(fields);
 		return this;
 	}
 
-	public Builder fields(Field<?>... fields) {
+	public Builder fields(Fieldable... fields) {
 		if(fields == null || (fieldCount = fields.length) == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
-		for (Field<?> field : fields) {
+		for (Fieldable field : fields) {
 			if(isFirstSetFields){
 				isFirstSetFields = false;
 			} else {
 				comma();
 			}
-			field(field);
-			if(field.getAlias() != null && field.getAliasJavaType() != null){
-				as(field.getAlias(), field.getAliasJavaType());
-			} else if(!isUnionFlag) {
-				getSelectFields().add(field);
+
+			Field realField;
+			if(field instanceof Field){
+				realField = (Field)field;
+				field(realField);
+				if(realField.getAlias() != null && realField.getAliasJavaType() != null){
+					as(realField.getAlias(), realField.getAliasJavaType());
+				} else if(!isUnionFlag) {
+					getSelectFields().add(realField);
+				}
+			} else {
+				Jointer jointer = (Jointer)field;
+				field(jointer);
+				realField = recursionGetLastField(jointer);
+				if(!isUnionFlag) {
+					getSelectFields().add(realField);
+				}
 			}
+		}
+		return this;
+	}
+
+	private Field<?> recursionGetLastField(Jointer jointer){
+		return FieldUtils.recursionGetLastField(jointer);
+
+	}
+
+	private Builder field(Fieldable field) {
+		if(field instanceof Field){
+			Field realField = (Field)field;
+			field(realField);
+		} else if(field instanceof Jointer){
+			Jointer jointer = (Jointer)field;
+			field(jointer);
 		}
 		return this;
 	}
 
 	private Builder field(Field<?> field) {
 		builder.append(field.getFullName());
-		recursionHasOperatorField(field);
+		return this;
+	}
+
+	private Builder field(Jointer jointer) {
+		recursionJointer(jointer);
 		return this;
 	}
 
@@ -316,13 +348,11 @@ public class BuilderImpl implements Builder {
 			}
 
 			if(setter.isFieldValue()){
-				
-				Field<?> fieldValue = setter.getFieldValue();
-				builder.append(setter.getField().getFullName()).append(" = ").append(fieldValue.getFullName());
 
-				recursionHasOperatorField(fieldValue);
+				Fieldable fieldValue = setter.getFieldable();
+				builder.append(setter.getField().getFullName()).append(" = ");
+				precessFieldable(fieldValue);
 
-				
 			} else if(setter.isEmptyValue()){
 				builder.append(setter.getField().getFullName()).append(" = ?");
 				getEmptyValueFields().add(setter.getField());
@@ -334,16 +364,33 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	private void recursionHasOperatorField(Field<?> field){
-		if(field.hasOperator()){
-			builder.append(" ").append(field.getOperator());
-			if(field.getOperField() != null){
-				builder.append(" ").append(field.getOperField().getFullName());
-				recursionHasOperatorField(field.getOperField());
-			} else if(field.getOperValue() != null){
-				builder.append(" ?");
-				getParams().add(field.getOperValue());
+	private void recursionJointer (Jointer jointer){
+
+		if(jointer.hasPrev()) {
+			recursionJointer(jointer.getPrev());
+		}
+		if(jointer.hasOperator()){
+			builder.append(" ").append(jointer.getOperator());
+		}
+		Object partner = jointer.getPartner();
+		if(partner == null) return;
+		if (partner instanceof Field) {
+			if(jointer.hasOperator() && "as".equalsIgnoreCase(jointer.getOperator().trim())){
+				builder.append(" ").append(((Field) partner).getAsName());
+			} else {
+				builder.append(" ").append(((Field) partner).getFullName());
 			}
+		} else {
+			builder.append(" ?");
+			getParams().add(partner);
+		}
+	}
+
+	private void precessFieldable(Fieldable fieldable){
+		if(fieldable instanceof Field){
+			builder.append(((Field)fieldable).getFullName());
+		} else {
+			recursionJointer((Jointer) fieldable);
 		}
 	}
 
@@ -422,8 +469,8 @@ public class BuilderImpl implements Builder {
 
 	public Builder on(Filter<?> filter) {
 		builder.append(" on ").append(filter.getField().getFullName()).append(filter.getOperator());
-		if(filter.getFieldValue() != null){
-			builder.append(filter.getFieldValue().getFullName());
+		if(filter.getFieldable() != null){
+			precessFieldable(filter.getFieldable());
 		} else {
 			builder.append("?");
 			getParams().add(filter.getValue());
@@ -495,12 +542,12 @@ public class BuilderImpl implements Builder {
 
 	private Builder filter(Filter<?> filter){
 		builder.append(filter.getField().getFullName()).append(" ");
-		recursionHasOperatorField(filter.getField());
 		String operator = filter.getOperator();
 		if(filter.isFieldValue()){
 			
-			Field<?> fieldValue = filter.getFieldValue();
-			builder.append(operator).append(" ").append(fieldValue.getFullName());
+			builder.append(operator).append(" ");
+
+			precessFieldable(filter.getFieldable());
 			//FIXME why ?
 //			if(fieldValue.hasOperator()){
 //				builder.append(" ").append(fieldValue.getOperator()).append(" ");
@@ -570,18 +617,18 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	public Builder groupBy(Field<?>... fields) {
+	public Builder groupBy(Fieldable... fields) {
 		if(fields == null || fields.length == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
 		builder.append(" group by ");
-		for (Field<?> field : fields) {
+		for (Fieldable field : fields) {
 			if(isFirstSetGroups){
 				isFirstSetGroups = false;
 			} else {
 				comma();
 			}
-			builder.append(field.getFullName());
+			precessFieldable(field);
 		}
 		return this;
 	}
@@ -618,18 +665,18 @@ public class BuilderImpl implements Builder {
 	}
 	
 
-	public Builder args(Field<?>... fields) {
+	public Builder args(Fieldable... fields) {
 		if(fields == null || fields.length == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
 		boolean isFirstSetArgs = true;
-		for (Field<?> field : fields) {
+		for (Fieldable field : fields) {
 			if(isFirstSetArgs){
 				isFirstSetArgs = false;
 			} else {
 				comma();
 			}
-			builder.append(field.getFullName());
+			field(field);
 		}
 		return this;
 	}
@@ -815,70 +862,144 @@ public class BuilderImpl implements Builder {
 		return this;
 	}
 
-	public Builder sum (Field<? extends Number> field) {
-		builder.append("sum(").append(field.getFullName()).append(")");
+	public Builder sum (Fieldable field) {
+		builder.append("sum(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder max (Field<?> field) {
-		builder.append("max(").append(field.getFullName()).append(")");
+	public Builder max (Fieldable field) {
+		builder.append("max(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder min (Field<?> field) {
-		builder.append("min(").append(field.getFullName()).append(")");
+	public Builder min (Fieldable field) {
+		builder.append("min(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder avg (Field<? extends Number> field) {
-		builder.append("avg(").append(field.getFullName()).append(")");
+	public Builder avg (Fieldable field) {
+		builder.append("avg(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder len (Field<String> field) {
-		builder.append("len(").append(field.getFullName()).append(")");
+	public Builder len (Fieldable field) {
+		builder.append("len(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder mid (Field<String> field, int start, int length) {
-		builder.append("min(")
-					.append(field.getFullName()).append(",")
-					.append(start).append(",")
-					.append(length)
+	public Builder mid (Fieldable field, int start, int length) {
+		builder.append("min(");
+		field(field);
+		builder.append(",")
+				.append(start).append(",")
+				.append(length)
 				.append(")");
 		return this;
 	}
 
-	public Builder ucase (Field<String> field) {
-		builder.append("ucase(").append(field.getFullName()).append(")");
+	public Builder ucase (Fieldable field) {
+		builder.append("ucase(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder lcase (Field<String> field) {
-		builder.append("lcase(").append(field.getFullName()).append(")");
+	public Builder lcase (Fieldable field) {
+		builder.append("lcase(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder first (Field<String> field) {
-		builder.append("first(").append(field.getFullName()).append(")");
+	public Builder first (Fieldable field) {
+		builder.append("first(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder last (Field<String> field) {
-		builder.append("last(").append(field.getFullName()).append(")");
+	public Builder last (Fieldable field) {
+		builder.append("last(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder round (Field<? extends Number> field, int decimals) {
-		builder.append("round(").append(field.getFullName()).append(")");
+	public Builder round (Fieldable field, int decimals) {
+		builder.append("round(");
+		field(field);
+		builder.append(")");
 		return this;
 	}
 
-	public Builder format (Field<?> field, String format) {
-		builder.append("format(")
-					.append(field.getFullName()).append(",")
-					.append(format)
-				.append(")");
+	public Builder format (Fieldable field, String format) {
+		builder.append("format(");
+		field(field);
+		builder.append(",").append(format).append(")");
+		return this;
+	}
+
+	public Builder where (Jointer jointer) {
+		where();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder and (Jointer jointer) {
+		and();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder or (Jointer jointer) {
+		or();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder rs (Jointer jointer) {
+		rs();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder ls (Jointer jointer) {
+		ls();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder cases (Jointer jointer) {
+		cases();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder when (Jointer jointer) {
+		when();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder then (Jointer jointer) {
+		then();
+		recursionJointer(jointer);
+		return this;
+	}
+
+	public Builder elses (Jointer jointer) {
+		elses();
+		recursionJointer(jointer);
 		return this;
 	}
 

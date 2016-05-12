@@ -13,7 +13,7 @@ public class BSQL {
 		return BuilderFactory.create().select();
 	}
 
-	public static Builder select (Field<?>... fields){
+	public static Builder select (Fieldable... fields){
 		return BuilderFactory.create().select(fields);
 	}
 

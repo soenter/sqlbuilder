@@ -9,7 +9,7 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public interface Field<T>{
+public interface Field<T> extends Fieldable {
 	
 	Class<T> getJavaType ();
 	
@@ -59,7 +59,7 @@ public interface Field<T>{
 	 * @param field
 	 * @return
 	 */
-	Filter<T> eq (Field<T> field);
+	Filter<?> eq (Fieldable field);
 	
 	/**
 	 * 不等于（!=, <>）
@@ -69,7 +69,7 @@ public interface Field<T>{
 	 */
 	Filter<T> ne (T value);
 
-	Filter<T> ne (Field<T> field);
+	Filter<?> ne (Fieldable field);
 
 	/**
 	 * 大于（>）
@@ -79,7 +79,7 @@ public interface Field<T>{
 	 */
 	Filter<T> gt (T value);
 
-	Filter<T> gt (Field<T> field);
+	Filter<?> gt (Fieldable field);
 
 	/**
 	 * 小于（<）
@@ -89,7 +89,7 @@ public interface Field<T>{
 	 */
 	Filter<T> lt (T value);
 
-	Filter<T> lt (Field<T> field);
+	Filter<?> lt (Fieldable field);
 
 	/**
 	 * 大于等于（>=）
@@ -99,7 +99,7 @@ public interface Field<T>{
 	 */
 	Filter<T> gte (T value);
 
-	Filter<T> gte (Field<T> field);
+	Filter<?> gte (Fieldable field);
 
 	/**
 	 * 小于等于（<=）
@@ -109,8 +109,7 @@ public interface Field<T>{
 	 */
 	Filter<T> lte (T value);
 
-
-	Filter<T> lte (Field<T> field);
+	Filter<?> lte (Fieldable field);
 	
 	
 	/**
@@ -177,7 +176,7 @@ public interface Field<T>{
 	 * @param field
 	 * @return
 	 */
-	Setter<T> st (Field<T> field);
+	Setter<T> st (Fieldable field);
 	
 	/**
 	 * 在...之间（between ? and ？）
@@ -208,14 +207,9 @@ public interface Field<T>{
 	 * 
 	 * @return
 	 */
-	Field<T> plus (T value);
-
-	/**
-	 * 加 (this + field)
-	 * @param field
-	 * @return
-	 */
-	Field<T> plus (Field<T> field);
+	Jointer plus (Object value);
+	Jointer plus (Jointer value);
+	Jointer plus ();
 
 	/**
 	 * 减
@@ -223,14 +217,9 @@ public interface Field<T>{
 	 * 
 	 * @return
 	 */
-	Field<T> subtract (T value);
-
-	/**
-	 * 减 (this - field)
-	 * @param field
-	 * @return
-	 */
-	Field<T> subtract (Field<T> field);
+	Jointer subtract (Object value);
+	Jointer subtract (Jointer value);
+	Jointer subtract ();
 
 	/**
 	 * 乘
@@ -238,14 +227,9 @@ public interface Field<T>{
 	 *
 	 * @return
 	 */
-	Field<T> multiply (T value);
-
-	/**
-	 * 乘 (this * field)
-	 * @param field
-	 * @return
-	 */
-	Field<T> multiply (Field<T> field);
+	Jointer multiply (Object value);
+	Jointer multiply (Jointer value);
+	Jointer multiply ();
 
 	/**
 	 * 除
@@ -253,14 +237,9 @@ public interface Field<T>{
 	 *
 	 * @return
 	 */
-	Field<T> divide (T value);
-
-	/**
-	 * 除 (this / field)
-	 * @param field
-	 * @return
-	 */
-	Field<T> divide (Field<T> field);
+	Jointer divide (Object value);
+	Jointer divide (Jointer value);
+	Jointer divide ();
 
 
 	/**
@@ -275,12 +254,14 @@ public interface Field<T>{
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	T getOperValue ();
 
 	/**
 	 * 获取操作字段
 	 * @return
 	 */
+	@Deprecated
 	Field<?> getOperField();
 
 	/**
@@ -288,6 +269,7 @@ public interface Field<T>{
 	 * 
 	 * @return
 	 */
+	@Deprecated
 	boolean hasOperator ();
 
 	/**
@@ -329,10 +311,12 @@ public interface Field<T>{
 	/**
 	 * 连接
 	 * @param operator
-	 * @param field
+	 * @param value
 	 * @return
 	 */
-	Field<?> join(String operator, Field<?> field);
+	Jointer join(String operator, Object value);
+	Jointer join(String operator, Jointer value);
+	Jointer join(String operator);
 
 	/**
 	 * 别名

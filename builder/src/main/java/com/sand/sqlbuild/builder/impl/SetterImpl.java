@@ -14,6 +14,7 @@
 package com.sand.sqlbuild.builder.impl;
 
 import com.sand.sqlbuild.builder.Field;
+import com.sand.sqlbuild.builder.Fieldable;
 import com.sand.sqlbuild.builder.Setter;
 import com.sand.sqlbuild.builder.ValueType;
 
@@ -33,7 +34,7 @@ public class SetterImpl <T> implements Setter<T> {
 	
 	private T value;
 	
-	private Field<T> fieldValue;
+	private Fieldable fieldValue;
 
 	protected ValueType valueType;
 	
@@ -43,7 +44,7 @@ public class SetterImpl <T> implements Setter<T> {
 		valueType = ValueType.ONE_VALUE;
 	}
 	
-	public SetterImpl(Field<T> field, Field<T> value){
+	public SetterImpl(Field<T> field, Fieldable value){
 		this.field = field;
 		this.fieldValue = value;
 		valueType = ValueType.FIELD_VALUE;
@@ -63,7 +64,7 @@ public class SetterImpl <T> implements Setter<T> {
 		return value;
 	}
 
-	public Field<T> getFieldValue() {
+	public Fieldable getFieldable () {
 		return fieldValue;
 	}
 
