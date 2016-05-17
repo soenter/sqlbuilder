@@ -754,6 +754,7 @@ public class BuilderImpl implements Builder {
 		if(type != null){
 
 			if(type == Type.insert && valueCount == 0){
+				getEmptyValueFields().addAll(getSelectFields());
 				values(fieldCount);
 			}
 		}

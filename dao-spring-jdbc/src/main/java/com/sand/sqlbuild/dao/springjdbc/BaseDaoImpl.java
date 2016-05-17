@@ -122,11 +122,11 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 	}
 
 	private void checkBatch(BuildResult result){
-//		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
-//
-//		if(emptyFiels == null || emptyFiels.isEmpty()){
-//			throw new IllegalArgumentException("批量执行 EmptyValuesFields 不能未空");
-//		}
+		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
+
+		if(emptyFiels == null || emptyFiels.isEmpty()){
+			throw new IllegalArgumentException("批量执行 EmptyValuesFields 不能未空");
+		}
 	}
 
 	public int delete(BuildResult buildResult) {
