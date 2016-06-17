@@ -20,6 +20,9 @@ public class PagingBuilderImpl implements PagingBuilder {
 	private Builder orderBuilder;
 	private Builder groupbyBuilder;
 
+	private Builder currentBuilder;
+
+
 	private BuildResult selectBr;
 	private BuildResult fromBr;
 	private BuildResult whereBr;
@@ -51,7 +54,8 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 */
 	public PagingBuilder select(Field<?>... fields) {
 		selectBuilder.select(fields);
-		
+
+		currentBuilder = selectBuilder;
 		return this;
 	}
 
@@ -61,11 +65,13 @@ public class PagingBuilderImpl implements PagingBuilder {
 	public PagingBuilder from(Class<? extends Table> clazz, Field<?> pk) {
 		fromBuilder.from(clazz);
 		fromPk = pk;
+		currentBuilder = fromBuilder;
 		return this;
 	}
 
 	public PagingBuilder from(Class<? extends Table> clazz) {
 		fromBuilder.from(clazz);
+		currentBuilder = fromBuilder;
 		return this;
 	}
 
@@ -73,7 +79,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#innerJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
 	public PagingBuilder innerJoin(Class<? extends Table> clazz) {
-		fromBuilder.innerJoin(clazz);
+		currentBuilder.innerJoin(clazz);
 		return this;
 	}
 
@@ -81,7 +87,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#leftJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
 	public PagingBuilder leftJoin(Class<? extends Table> clazz) {
-		fromBuilder.leftJoin(clazz);
+		currentBuilder.leftJoin(clazz);
 		return this;
 	}
 
@@ -89,7 +95,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#rightJoin(com.sand.abacus.util.data.sqlbuild.Table)
 	 */
 	public PagingBuilder rightJoin(Class<? extends Table> clazz) {
-		fromBuilder.rightJoin(clazz);
+		currentBuilder.rightJoin(clazz);
 		return this;
 	}
 
@@ -97,7 +103,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#on(com.sand.abacus.util.data.sqlbuild.Field)
 	 */
 	public PagingBuilder on(Filter<?> filter) {
-		fromBuilder.on(filter);
+		currentBuilder.on(filter);
 		return this;
 	}
 
@@ -106,6 +112,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 */
 	public PagingBuilder where(Filter<?>... filters) {
 		BuilderUtils.joinFiltersByAnd(whereBuilder, filters);
+		currentBuilder = whereBuilder;
 		return this;
 	}
 
@@ -114,6 +121,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 */
 	public PagingBuilder where(FilterBuilder filterBuilder) {
 		whereBuilder.where(filterBuilder);
+		currentBuilder = whereBuilder;
 		return this;
 	}
 
@@ -121,7 +129,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#and(com.sand.abacus.util.data.sqlbuild.Filter)
 	 */
 	public PagingBuilder and(Filter<?> filter) {
-		whereBuilder.and(filter);
+		currentBuilder.and(filter);
 		return this;
 	}
 
@@ -129,7 +137,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#or(com.sand.abacus.util.data.sqlbuild.Filter)
 	 */
 	public PagingBuilder or(Filter<?> filter) {
-		whereBuilder.or(filter);
+		currentBuilder.or(filter);
 		return this;
 	}
 
@@ -138,6 +146,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	 */
 	public PagingBuilder orderBy(Order... orders) {
 		orderBuilder.orderBy(orders);
+		currentBuilder = orderBuilder;
 		return this;
 	}
 
@@ -247,38 +256,45 @@ public class PagingBuilderImpl implements PagingBuilder {
 
 	public PagingBuilder groupBy (Field<?>... fields) {
 		groupbyBuilder.groupBy(fields);
+		currentBuilder = groupbyBuilder;
 		return this;
 	}
 
 	public PagingBuilder limit (int limit) {
-		whereBuilder.limit(limit);
+		currentBuilder.limit(limit);
 		return this;
 	}
 
 	public PagingBuilder rownum (int rownum) {
-		whereBuilder.rownum(rownum);
+		currentBuilder.rownum(rownum);
 		return this;
 	}
 
 	public PagingBuilder ls () {
-		whereBuilder.ls();
+		currentBuilder.ls();
 		return this;
 	}
 
 	public PagingBuilder rs () {
-		whereBuilder.rs();
+		currentBuilder.rs();
 		return this;
 	}
 
 	public PagingBuilder rs (Filter<?> filter) {
-		whereBuilder.rs(filter);
+		currentBuilder.rs(filter);
 		return this;
 	}
 
 	public PagingBuilder ls (Filter<?> filter) {
-		whereBuilder.ls(filter);
+		currentBuilder.ls(filter);
 		return this;
 	}
+
+	public PagingBuilder func (String funName) {
+		currentBuilder.func(funName);
+		return this;
+	}
+
 
 	public BuildResult buildMySqlPagingList (int pageStart, int pageEnd, int pageLimit) {
 		checkPageArgs(pageStart, pageEnd, pageLimit);

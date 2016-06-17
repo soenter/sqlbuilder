@@ -77,6 +77,7 @@ public interface PagingBuilder {
 
 	PagingBuilder ls(Filter<?> filter);
 
+	PagingBuilder func(String funName);
 
 	/**
 	 * @return

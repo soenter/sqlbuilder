@@ -484,7 +484,7 @@ public class PersonExample {
 	public void test_mysql_paging(){
 		PagingBuilder builder = PagingBuilderFactory.create()
 				.select(PersonPo.all)
-				.from(PersonPo.class)
+				.from(PersonPo.class, PersonPo.name)
 				.where(PersonPo.age.gt(1))
 				.orderBy(PersonPo.name.asc());
 
