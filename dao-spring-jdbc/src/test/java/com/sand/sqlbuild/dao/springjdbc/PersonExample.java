@@ -486,6 +486,7 @@ public class PersonExample {
 				.select(PersonPo.all)
 				.from(PersonPo.class, PersonPo.name)
 				.where(PersonPo.age.gt(1))
+				.and().func(" 1=1 ")
 				.orderBy(PersonPo.name.asc());
 
 

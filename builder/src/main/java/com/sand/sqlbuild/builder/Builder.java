@@ -8,43 +8,43 @@ package com.sand.sqlbuild.builder;
  * @since 1.0.0
  *
  */
-public interface Builder {
+public interface Builder <T extends Builder> {
 	
 	/*------------------------------------查询（select）------------------------------------*/
 	
-	Builder select ();
+	T select ();
 	
-	Builder select (Fieldable... fields);
+	T select (Fieldable... fields);
 	
-	Builder distinct ();
+	T distinct ();
 
-	Builder fields (Fieldable... fields);
+	T fields (Fieldable... fields);
 	
-	//Builder all();
+	//T all();
 
 	/*------------------------------------插入（insert）------------------------------------*/
 
-	Builder insert (Class<? extends Table> clazz, Field<?>... fields);
+	T insert (Class<? extends Table> clazz, Field<?>... fields);
 
-	Builder insert(Table table, Field<?>... fields);
+	T insert(Table table, Field<?>... fields);
 
-	Builder values (Object... values);
+	T values (Object... values);
 
-	Builder insert (Class<? extends Table> clazz, Setter<?>... setters);
+	T insert (Class<? extends Table> clazz, Setter<?>... setters);
 
-	Builder insert (Table table, Setter<?>... setters);
+	T insert (Table table, Setter<?>... setters);
 
-	Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters);
+	T upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters);
 
 	/*------------------------------------更新（update）------------------------------------*/
 
-	Builder update (Class<? extends Table> clazz);
+	T update (Class<? extends Table> clazz);
 
-	Builder set (Setter<?>... setters);
+	T set (Setter<?>... setters);
 
 	/*------------------------------------删除（update）------------------------------------*/
 
-	Builder delete ();
+	T delete ();
 
 	/*------------------------------------表连接（join）------------------------------------*/
 
@@ -54,7 +54,7 @@ public interface Builder {
 	 * @param clazz
 	 * @return
 	 */
-	Builder join (Class<? extends Table> clazz);
+	T join (Class<? extends Table> clazz);
 	
 	/**
 	 * 内连接（inner join）
@@ -62,14 +62,14 @@ public interface Builder {
 	 * @param clazz
 	 * @return
 	 */
-	Builder innerJoin (Class<? extends Table> clazz);
-	Builder leftJoin (Class<? extends Table> clazz);
-	Builder rightJoin (Class<? extends Table> clazz);
-	Builder on (Filter<?> filter);
+	T innerJoin (Class<? extends Table> clazz);
+	T leftJoin (Class<? extends Table> clazz);
+	T rightJoin (Class<? extends Table> clazz);
+	T on (Filter<?> filter);
 
 	/*------------------------------------通用（common）------------------------------------*/
 	
-	Builder from (Class<? extends Table> clazz);
+	T from (Class<? extends Table> clazz);
 
     /**
      * 多表查询（select * from table_1, table_2）
@@ -78,43 +78,43 @@ public interface Builder {
      * @param clazzs
      * @return
      */
-    Builder from (Class<? extends Table> first, Class<? extends Table>... clazzs);
+    T from (Class<? extends Table> first, Class<? extends Table>... clazzs);
 
     /**
      *
      * @param clazzs
      * @return
      */
-    Builder from (Class<? extends Table>[] clazzs);
+    T from (Class<? extends Table>[] clazzs);
 
-	Builder where ();
+	T where ();
 
-	Builder where (Filter<?> filter);
+	T where (Filter<?> filter);
 
-	Builder where (Jointer jointer);
-
-	@Deprecated
-	Builder where (FilterBuilder filterBuilder);
-	
-	Builder and ();
-	
-	Builder and (Filter<?> filter);
-
-	Builder and (Jointer jointer);
+	T where (Jointer jointer);
 
 	@Deprecated
-	Builder and (FilterBuilder filterBuilder);
+	T where (FilterBuilder filterT);
 	
-	Builder or (Filter<?> filter);
+	T and ();
+	
+	T and (Filter<?> filter);
 
-	Builder or (Jointer jointer);
+	T and (Jointer jointer);
 
 	@Deprecated
-	Builder or (FilterBuilder filterBuilder);
+	T and (FilterBuilder filterT);
 	
-	Builder orderBy (Order... orders);
+	T or (Filter<?> filter);
+
+	T or (Jointer jointer);
+
+	@Deprecated
+	T or (FilterBuilder filterT);
 	
-	Builder groupBy (Fieldable... fields);
+	T orderBy (Order... orders);
+	
+	T groupBy (Fieldable... fields);
 
 	/**
 	 * Mysql 语法
@@ -122,7 +122,7 @@ public interface Builder {
 	 * @param limit
 	 * @return
 	 */
-	Builder limit (int limit);
+	T limit (int limit);
 
 	/**
 	 * Mysql 语法
@@ -130,7 +130,7 @@ public interface Builder {
 	 * @param limitEnd
 	 * @return
 	 */
-	Builder limit (int limitStart, int limitEnd);
+	T limit (int limitStart, int limitEnd);
 	
 	/**
 	 * SQL Server 语法
@@ -138,7 +138,7 @@ public interface Builder {
 	 * @param top
 	 * @return
 	 */
-	Builder top (int top);
+	T top (int top);
 	
 	/**
 	 * Oracle 语法
@@ -146,7 +146,7 @@ public interface Builder {
 	 * @param rownum
 	 * @return
 	 */
-	Builder rownum (int rownum);
+	T rownum (int rownum);
 	
 
 	/**
@@ -155,9 +155,9 @@ public interface Builder {
 	 * @param funName
 	 * @return
 	 */
-	Builder func (String funName);
+	T func (String funName);
 
-	//Builder func (String funName, Field<?>... args);
+	//T func (String funName, Field<?>... args);
 
 	/**
 	 * 左边括号"("
@@ -165,7 +165,7 @@ public interface Builder {
 	 * <br>ls = left sign
 	 * @return
 	 */
-	Builder ls ();
+	T ls ();
 	
 	/**
 	 * 函数参数
@@ -173,7 +173,7 @@ public interface Builder {
 	 * @param fields
 	 * @return
 	 */
-	Builder args (Fieldable... fields);
+	T args (Fieldable... fields);
 	
 	/**
 	 * 右边括号")"
@@ -182,21 +182,21 @@ public interface Builder {
 	 * 
 	 * @return
 	 */
-	Builder rs ();
+	T rs ();
 
 	/**
 	 * 点 “.”
 	 *
 	 * @return
 	 */
-	Builder dot ();
+	T dot ();
 	
 	/**
 	 * 逗号 “,”
 	 * 
 	 * @return
 	 */
-	Builder comma ();
+	T comma ();
 	
 	/**
 	 * 别名
@@ -204,14 +204,14 @@ public interface Builder {
 	 * @param field
 	 * @return
 	 */
-	Builder as (Field<?> field);
+	T as (Field<?> field);
 
 
-    Builder as (String aliasName, Class<?> javaType);
+    T as (String aliasName, Class<?> javaType);
 	
-	Builder as (Field<?> field, Class<?> javaType);
+	T as (Field<?> field, Class<?> javaType);
 
-	Builder forUpdate ();
+	T forUpdate ();
 	
 	/**
 	 * wait 子句指定等待其他用户释放锁的秒数，防止无限期的等待
@@ -221,11 +221,11 @@ public interface Builder {
 	 * @param second
 	 * @return
 	 */
-	Builder waits (int second);
+	T waits (int second);
 	
-	Builder union ();
+	T union ();
 
-	Builder unionAll ();
+	T unionAll ();
 
 	/**
 	 * 构建返回结果并重新初始化builder
@@ -238,70 +238,70 @@ public interface Builder {
 	/**
 	 * 从新初始化
 	 */
-	Builder reinit ();
+	T reinit ();
 
-	Builder or();
+	T or();
 
-	Builder rs(Filter<?> filter);
+	T rs(Filter<?> filter);
 
-	Builder rs(Jointer jointer);
+	T rs(Jointer jointer);
 
-	Builder ls(Filter<?> filter);
+	T ls(Filter<?> filter);
 
-	Builder ls(Jointer jointer);
+	T ls(Jointer jointer);
 
-	Builder cases();
+	T cases();
 
-	Builder cases(Field<?> field);
+	T cases(Field<?> field);
 
-	Builder cases(Jointer jointer);
+	T cases(Jointer jointer);
 
-	Builder when();
+	T when();
 
-	Builder when(Field<?> field);
+	T when(Field<?> field);
 
-	Builder when(Object value);
+	T when(Object value);
 
-	Builder when(Filter<?> filter);
+	T when(Filter<?> filter);
 
-	Builder when(Jointer jointer);
+	T when(Jointer jointer);
 
-	Builder then();
+	T then();
 
-	Builder then(Field<?> field);
+	T then(Field<?> field);
 
-	Builder then(Object value);
+	T then(Object value);
 
-	Builder then(Jointer jointer);
+	T then(Jointer jointer);
 
-	Builder elses();
+	T elses();
 
-	Builder elses(Field<?> field);
+	T elses(Field<?> field);
 
-	Builder elses(Object value);
+	T elses(Object value);
 
-	Builder elses(Jointer jointer);
+	T elses(Jointer jointer);
 
-	Builder end();
+	T end();
 
-	Builder count(Field<?> field);
+	T count(Field<?> field);
 
 	/**
 	 * COUNT(DISTINCT) 适用于 ORACLE 和 Microsoft SQL Server，但是无法用于 Microsoft Access。
 	 * @param field
 	 * @return
 	 */
-	Builder countDistinct(Field<?> field);
+	T countDistinct(Field<?> field);
 
-	Builder sum(Fieldable field);
+	T sum(Fieldable field);
 
-	Builder max(Fieldable field);
+	T max(Fieldable field);
 
-	Builder min(Fieldable field);
+	T min(Fieldable field);
 
-	Builder avg(Fieldable field);
+	T avg(Fieldable field);
 
-	Builder len(Fieldable field);
+	T len(Fieldable field);
 
 	/**
 	 * MID 函数用于从文本字段中提取字符。
@@ -310,35 +310,35 @@ public interface Builder {
 	 * @param length 长度
 	 * @return
 	 */
-	Builder mid(Fieldable field, int start, int length);
+	T mid(Fieldable field, int start, int length);
 
 	/**
 	 * UCASE 函数把字段的值转换为大写。
 	 * @param field
 	 * @return
 	 */
-	Builder ucase(Fieldable field);
+	T ucase(Fieldable field);
 
 	/**
 	 * LCASE 函数把字段的值转换为小写。
 	 * @param field
 	 * @return
 	 */
-	Builder lcase(Fieldable field);
+	T lcase(Fieldable field);
 
 	/**
 	 * FIRST() 函数返回指定的字段中第一个记录的值。
 	 * @param field
 	 * @return
 	 */
-	Builder first(Fieldable field);
+	T first(Fieldable field);
 
 	/**
 	 * LAST() 函数返回指定的字段中最后一个记录的值。
 	 * @param field
 	 * @return
 	 */
-	Builder last(Fieldable field);
+	T last(Fieldable field);
 
 	/**
 	 * ROUND 函数用于把数值字段舍入为指定的小数位数。
@@ -346,7 +346,7 @@ public interface Builder {
 	 * @param decimals 必需。规定要返回的小数位数。
 	 * @return
 	 */
-	Builder round(Fieldable field, int decimals);
+	T round(Fieldable field, int decimals);
 
 	/**
 	 * FORMAT 函数用于对字段的显示进行格式化。
@@ -354,6 +354,6 @@ public interface Builder {
 	 * @param format
 	 * @return
 	 */
-	Builder format(Fieldable field, String format);
+	T format(Fieldable field, String format);
 
 }

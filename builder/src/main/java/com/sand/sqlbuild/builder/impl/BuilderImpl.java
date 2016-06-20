@@ -12,7 +12,7 @@ import java.util.*;
  * @since 1.0.0
  *
  */
-public class BuilderImpl implements Builder {
+public class BuilderImpl <T extends Builder> implements Builder<T> {
 
 	private StringBuilder builder;
 	
@@ -54,26 +54,26 @@ public class BuilderImpl implements Builder {
 
 	}
 
-	public Builder reinit(){
+	public T reinit(){
 		init();
-		return this;
+		return (T)this;
 	}
 	
 	/*------------------------------------查询（select）------------------------------------*/
 	
-	public Builder select() {
+	public T select() {
 		type = Type.select;
 		builder.append("select ");
-		return this;
+		return (T)this;
 	}
 	
-	public Builder select(Fieldable... fields) {
+	public T select(Fieldable... fields) {
 		select();
 		fields(fields);
-		return this;
+		return (T)this;
 	}
 
-	public Builder fields(Fieldable... fields) {
+	public T fields(Fieldable... fields) {
 		if(fields == null || (fieldCount = fields.length) == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
@@ -102,7 +102,7 @@ public class BuilderImpl implements Builder {
 				}
 			}
 		}
-		return this;
+		return (T)this;
 	}
 
 	private Field<?> recursionGetLastField(Jointer jointer){
@@ -110,7 +110,7 @@ public class BuilderImpl implements Builder {
 
 	}
 
-	private Builder field(Fieldable field) {
+	private T field(Fieldable field) {
 		if(field instanceof Field){
 			Field realField = (Field)field;
 			field(realField);
@@ -118,52 +118,52 @@ public class BuilderImpl implements Builder {
 			Jointer jointer = (Jointer)field;
 			field(jointer);
 		}
-		return this;
+		return (T)this;
 	}
 
-	private Builder field(Field<?> field) {
+	private T field(Field<?> field) {
 		builder.append(field.getFullName());
-		return this;
+		return (T)this;
 	}
 
-	private Builder field(Jointer jointer) {
+	private T field(Jointer jointer) {
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder distinct() {
+	public T distinct() {
 		builder.append(" distinct ");
-		return this;
+		return (T)this;
 	}
 
 	/*------------------------------------插入（insert）------------------------------------*/
 
-	public Builder insert(Class<? extends Table> clazz, Field<?>... fields) {
+	public T insert(Class<? extends Table> clazz, Field<?>... fields) {
 		Table table = newTable(clazz);
 		return insert(table.getName(), fields);
 	}
 
-	public Builder insert(Table table, Field<?>... fields) {
+	public T insert(Table table, Field<?>... fields) {
 		return insert(table.getName(), fields);
 	}
 
-	private Builder insert(String name, Field<?>... fields) {
+	private T insert(String name, Field<?>... fields) {
 		type = Type.insert;
 		builder.append("insert into ").append(name).append("(");
 		fields(fields);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder values(Object... values) {
+	public T values(Object... values) {
 		if(values == null || (valueCount = values.length) == 0){
 			throw new IllegalArgumentException("values参数不能为null或长度等于0");
 		}
-		
+
 		if(valueCount != fieldCount){
 			throw new IllegalArgumentException("values参数长度:" + valueCount + "与fields参数长度:" + fieldCount + "不匹配");
 		}
-		
+
 		builder.append(" values( ");
 		for (Object object : values) {
 			if(isFirstSetValues){
@@ -175,20 +175,20 @@ public class BuilderImpl implements Builder {
 			getParams().add(object);
 		}
 		builder.append(")");
-		
-		
-		return this;
+
+
+		return (T)this;
 	}
 
-	public Builder insert (Class<? extends Table> clazz, Setter<?>... setters) {
+	public T insert (Class<? extends Table> clazz, Setter<?>... setters) {
 		return insert(newTable(clazz).getName(), setters);
 	}
 
-	public Builder insert (Table table, Setter<?>... setters) {
+	public T insert (Table table, Setter<?>... setters) {
 		return insert(table.getName(), setters);
 	}
 
-	public Builder insert (String tableName, Setter<?>... setters) {
+	public T insert (String tableName, Setter<?>... setters) {
 
 		Field<?>[] fields = new Field<?>[setters.length];
 		Object[] values = new Object[setters.length];
@@ -212,7 +212,7 @@ public class BuilderImpl implements Builder {
 		if (lastEmptyValue){
 			return insert(tableName, fields);
 		} else {
-			return insert(tableName, fields).values(values);
+			return (T)insert(tableName, fields).values(values);
 		}
 
 	}
@@ -221,7 +221,7 @@ public class BuilderImpl implements Builder {
 	private static final String UPSERT_SERTER_PREFIX = "setter_";
 	private static final String UPSERT_FILTER_PREFIX = "filter_";
 
-	public Builder upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters) {
+	public T upsertOracle (Class<? extends Table> clazz, Setter<?>[] setters, Filter<?>[] filters) {
 		// 使用 oracle merge into 语法实现 upsert
 		String tableName = newTable(clazz).getName();
 
@@ -301,10 +301,10 @@ public class BuilderImpl implements Builder {
 				.append(" on ").append(filterSql).append(" when matched then ").append(updateSql)
 				.append(" when not matched then ").append(insertSql).append(" ").append(valusSql);
 
-		return this;
+		return (T)this;
 	}
 
-	private Builder values(int size) {
+	private T values(int size) {
 
 		builder.append(" values( ");
 		for (int i = 0; i <  size; i++) {
@@ -317,20 +317,20 @@ public class BuilderImpl implements Builder {
 		builder.append(")");
 
 
-		return this;
+		return (T)this;
 	}
 	/*------------------------------------更新（update）------------------------------------*/
 
 
-	public Builder update(Class<? extends Table> clazz) {
+	public T update(Class<? extends Table> clazz) {
 		type = Type.update;
 		Table table = newTable(clazz);
 		builder.append("update ").append(table.getName());
-		return this;
+		return (T)this;
 	}
 
 
-	public Builder set(Setter<?>... setters) {
+	public T set(Setter<?>... setters) {
 		if(setters == null || setters.length == 0){
 			throw new IllegalArgumentException("values参数不能为null或长度等于0");
 		}
@@ -361,7 +361,7 @@ public class BuilderImpl implements Builder {
 				getParams().add(setter.getValue());
 			}
 		}
-		return this;
+		return (T)this;
 	}
 
 	private void recursionJointer (Jointer jointer){
@@ -397,49 +397,49 @@ public class BuilderImpl implements Builder {
 	/*------------------------------------删除（update）------------------------------------*/
 
 
-	public Builder delete() {
+	public T delete() {
 		builder.append("delete ");
-		return this;
+		return (T)this;
 	}
 
 	/*------------------------------------表连接（join）------------------------------------*/
 
-	public Builder join(Class<? extends Table> clazz) {
+	public T join(Class<? extends Table> clazz) {
 		//FIXME 获取表名，改为注解形式
 		Table table = newTable(clazz);
 		builder.append(" inner join ").append(table.getName());
-		return this;
+		return (T)this;
 	}
 
-	public Builder innerJoin(Class<? extends Table> clazz) {
+	public T innerJoin(Class<? extends Table> clazz) {
 		return join(clazz);
 	}
 
-	public Builder leftJoin(Class<? extends Table> clazz) {
+	public T leftJoin(Class<? extends Table> clazz) {
 		//TODO 获取表名，改为注解形式
 		Table table = newTable(clazz);
 		builder.append(" left join ").append(table.getName());
-		return this;
+		return (T)this;
 	}
 
-	public Builder rightJoin(Class<? extends Table> clazz) {
+	public T rightJoin(Class<? extends Table> clazz) {
 		//TODO 获取表名，改为注解形式
 		Table table = newTable(clazz);
 		builder.append(" right join ").append(table.getName());
-		return this;
+		return (T)this;
 	}
-	
+
 	/*------------------------------------通用（common）------------------------------------*/
 
 
-	public Builder from(Class<? extends Table> clazz) {
+	public T from(Class<? extends Table> clazz) {
 		//FIXME 获取表名，改为注解形式
 		Table table = newTable(clazz);
 		builder.append(" from ").append(table.getName());
-		return this;
+		return (T)this;
 	}
 
-    public Builder from(Class<? extends Table> first, Class<? extends Table>... clazzs) {
+    public T from(Class<? extends Table> first, Class<? extends Table>... clazzs) {
         Table table = newTable(first);
         builder.append(" from ").append(table.getName());
         for (Class<? extends Table> class1 : clazzs) {
@@ -448,10 +448,10 @@ public class BuilderImpl implements Builder {
             table = newTable(class1);
             builder.append(table.getName());
         }
-        return this;
+        return (T)this;
     }
 
-	public Builder from(Class<? extends Table>[] clazzs) {
+	public T from(Class<? extends Table>[] clazzs) {
 		builder.append(" from ");
 		boolean isFirst = true;
 		for (Class<? extends Table> class1 : clazzs) {
@@ -464,10 +464,10 @@ public class BuilderImpl implements Builder {
 			}
 			builder.append(table.getName());
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder on(Filter<?> filter) {
+	public T on(Filter<?> filter) {
 		builder.append(" on ").append(filter.getField().getFullName()).append(filter.getOperator());
 		if(filter.getFieldable() != null){
 			precessFieldable(filter.getFieldable());
@@ -475,7 +475,7 @@ public class BuilderImpl implements Builder {
 			builder.append("?");
 			getParams().add(filter.getValue());
 		}
-		return this;
+		return (T)this;
 	}
 
 	private Table newTable(Class<? extends Table> clazz){
@@ -488,63 +488,63 @@ public class BuilderImpl implements Builder {
 		}
 	}
 
-	public Builder where () {
+	public T where () {
 		builder.append(" where ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder where (Filter<?> filter) {
+	public T where (Filter<?> filter) {
 		where();
 		return filter(filter);
 	}
 
-	public Builder where(FilterBuilder filterBuilder) {
+	public T where(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" where ").append(fbr.getSql());
 		if(fbr.getParameters() != null){
 			getParams().addAll(fbr.getParameters());
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder and() {
+	public T and() {
 		builder.append(" and ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder and(Filter<?> filter) {
+	public T and(Filter<?> filter) {
 		and();
 		return filter(filter);
 	}
 
-	public Builder and(FilterBuilder filterBuilder) {
+	public T and(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" and ").append(fbr.getSql());
 		if(fbr.getParameters() != null){
 			getParams().addAll(fbr.getParameters());
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder or (Filter<?> filter) {
+	public T or (Filter<?> filter) {
 		builder.append(" or ");
 		return filter(filter);
 	}
-	
-	public Builder or(FilterBuilder filterBuilder) {
+
+	public T or(FilterBuilder filterBuilder) {
 		FilterBuildResult fbr = filterBuilder.build();
 		builder.append(" or ").append(fbr.getSql());
 		if(fbr.getParameters() != null){
 			getParams().addAll(fbr.getParameters());
 		}
-		return this;
+		return (T)this;
 	}
 
-	private Builder filter(Filter<?> filter){
+	private T filter(Filter<?> filter){
 		builder.append(filter.getField().getFullName()).append(" ");
 		String operator = filter.getOperator();
 		if(filter.isFieldValue()){
-			
+
 			builder.append(operator).append(" ");
 
 			precessFieldable(filter.getFieldable());
@@ -561,18 +561,18 @@ public class BuilderImpl implements Builder {
 					getParams().add(filter.getValue());
 				}
 			} else if(filter.getValueType() == ValueType.TWIN_VALUES){
-				if(filter.getValues() == null) 
+				if(filter.getValues() == null)
 					throw new IllegalArgumentException("ValueType.TWIN时 值对象数组长度必须为2");
 
 				builder.append(operator).append(" ");
-				
+
 				getParams().add(filter.getValues()[0]);
 				getParams().add(filter.getValues()[1]);
-				
+
 			} else if(filter.getValueType() == ValueType.MULTI_VALUES){
-				if(filter.getValues() == null) 
+				if(filter.getValues() == null)
 					throw new IllegalArgumentException("ValueType.MULTI时值对象数组不能为null");
-				
+
 				boolean isFirst = true;
 				builder.append(operator).append(" (");
 				for (Object value : filter.getValues()) {
@@ -590,13 +590,13 @@ public class BuilderImpl implements Builder {
 			} else {
 				throw new IllegalArgumentException("ValueType 非法");
 			}
-			
+
 		}
 
-		return this;
+		return (T)this;
 	}
-	
-	public Builder orderBy(Order... orders) {
+
+	public T orderBy(Order... orders) {
 		if(orders == null || orders.length == 0){
 			throw new IllegalArgumentException("orders参数不能为null或长度等于0");
 		}
@@ -614,10 +614,10 @@ public class BuilderImpl implements Builder {
 				builder.append("desc");
 			}
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder groupBy(Fieldable... fields) {
+	public T groupBy(Fieldable... fields) {
 		if(fields == null || fields.length == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
@@ -630,42 +630,42 @@ public class BuilderImpl implements Builder {
 			}
 			precessFieldable(field);
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder limit(int limit) {
+	public T limit(int limit) {
 		builder.append(" limit = ").append(limit);
-		return this;
+		return (T)this;
 	}
 
-	public Builder limit (int limitStart, int limitEnd) {
+	public T limit (int limitStart, int limitEnd) {
 		builder.append(" limit ").append(limitStart).append(", ").append(limitEnd).append(" ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder top(int top) {
+	public T top(int top) {
 		builder.append(" top ").append(top);
-		return this;
+		return (T)this;
 	}
 
-	public Builder rownum (int rownum) {
+	public T rownum (int rownum) {
 		builder.append(" rownum <= ").append(rownum);
-		return this;
+		return (T)this;
 	}
 
-	
-	public Builder func(String funName) {
+
+	public T func(String funName) {
 		builder.append(" ").append(funName).append(" ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder ls() {
+	public T ls() {
 		builder.append("(");
-		return this;
+		return (T)this;
 	}
-	
 
-	public Builder args(Fieldable... fields) {
+
+	public T args(Fieldable... fields) {
 		if(fields == null || fields.length == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
@@ -678,65 +678,65 @@ public class BuilderImpl implements Builder {
 			}
 			field(field);
 		}
-		return this;
+		return (T)this;
 	}
 
-	public Builder rs() {
+	public T rs() {
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder dot () {
+	public T dot () {
 		builder.append(".");
-		return this;
+		return (T)this;
 	}
 
-	public Builder comma () {
+	public T comma () {
 		builder.append(",");
-		return this;
+		return (T)this;
 	}
 
-	public Builder as(Field<?> field) {
+	public T as(Field<?> field) {
 		builder.append(" as ").append(field.getAsName());
 		if(!isUnionFlag){
 			getSelectFields().add(field);
 		}
-		return this;
+		return (T)this;
 	}
 
 
-    public Builder as(String aliasName, Class<?> javaType) {
+    public T as(String aliasName, Class<?> javaType) {
 	    Field<?> asField = FieldFactory.create(aliasName, javaType);
         return as(asField);
     }
 
-	public Builder as(Field<?> field, Class<?> javaType) {
+	public T as(Field<?> field, Class<?> javaType) {
 		Field<?> fd = FieldFactory.as(field, javaType);
 		return as(fd);
 	}
 
-	public Builder forUpdate() {
+	public T forUpdate() {
 		builder.append(" for update ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder waits(int second) {
+	public T waits(int second) {
 		builder.append(" wait ").append(second);
-		return this;
+		return (T)this;
 	}
 
-	public Builder union() {
+	public T union() {
 		builder.append(" union ");
 		unionInit();
-		return this;
+		return (T)this;
 	}
 
-	public Builder unionAll() {
+	public T unionAll() {
 		builder.append(" union all ");
 		unionInit();
-		return this;
+		return (T)this;
 	}
-	
+
 	private void unionInit(){
 		isFirstSetFields = true;
 		isFirstSetSetters = true;
@@ -764,243 +764,243 @@ public class BuilderImpl implements Builder {
 		return result;
 	}
 
-	public Builder ls (Filter<?> filter) {
+	public T ls (Filter<?> filter) {
 		ls();
 		filter(filter);
-		return this;
+		return (T)this;
 	}
 
-	public Builder rs (Filter<?> filter) {
+	public T rs (Filter<?> filter) {
 		rs();
 		filter(filter);
-		return this;
+		return (T)this;
 	}
 
-	public Builder or () {
+	public T or () {
 		builder.append(" or ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder cases () {
+	public T cases () {
 		builder.append(" case ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder cases (Field<?> field) {
+	public T cases (Field<?> field) {
 		cases();
 		return field(field);
 	}
 
-	public Builder when () {
+	public T when () {
 		builder.append(" when ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder when (Field<?> field) {
+	public T when (Field<?> field) {
 		when();
 		return field(field);
 	}
 
-	public Builder when (Object value) {
+	public T when (Object value) {
 		when();
 		builder.append(" ? ");
 		getParams().add(value);
-		return this;
+		return (T)this;
 	}
 
-	public Builder when (Filter<?> filter) {
+	public T when (Filter<?> filter) {
 		when();
 		return filter(filter);
 	}
 
-	public Builder then () {
+	public T then () {
 		builder.append(" then ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder then (Field<?> field) {
+	public T then (Field<?> field) {
 		then();
 		return field(field);
 	}
 
-	public Builder then (Object value) {
+	public T then (Object value) {
 		then();
 		builder.append(" ? ");
 		getParams().add(value);
-		return this;
+		return (T)this;
 	}
 
-	public Builder elses () {
+	public T elses () {
 		builder.append(" else ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder elses (Field<?> field) {
+	public T elses (Field<?> field) {
 		elses();
 		return field(field);
 	}
 
-	public Builder elses (Object value) {
+	public T elses (Object value) {
 		elses();
 		builder.append(" ? ");
 		getParams().add(value);
-		return this;
+		return (T)this;
 	}
 
-	public Builder end () {
+	public T end () {
 		builder.append(" end ");
-		return this;
+		return (T)this;
 	}
 
-	public Builder count (Field<?> field) {
+	public T count (Field<?> field) {
 		builder.append("count(").append(field.getFullName()).append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder countDistinct (Field<?> field) {
+	public T countDistinct (Field<?> field) {
 		builder.append("count(distinct ").append(field.getFullName()).append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder sum (Fieldable field) {
+	public T sum (Fieldable field) {
 		builder.append("sum(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder max (Fieldable field) {
+	public T max (Fieldable field) {
 		builder.append("max(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder min (Fieldable field) {
+	public T min (Fieldable field) {
 		builder.append("min(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder avg (Fieldable field) {
+	public T avg (Fieldable field) {
 		builder.append("avg(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder len (Fieldable field) {
+	public T len (Fieldable field) {
 		builder.append("len(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder mid (Fieldable field, int start, int length) {
+	public T mid (Fieldable field, int start, int length) {
 		builder.append("min(");
 		field(field);
 		builder.append(",")
 				.append(start).append(",")
 				.append(length)
 				.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder ucase (Fieldable field) {
+	public T ucase (Fieldable field) {
 		builder.append("ucase(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder lcase (Fieldable field) {
+	public T lcase (Fieldable field) {
 		builder.append("lcase(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder first (Fieldable field) {
+	public T first (Fieldable field) {
 		builder.append("first(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder last (Fieldable field) {
+	public T last (Fieldable field) {
 		builder.append("last(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder round (Fieldable field, int decimals) {
+	public T round (Fieldable field, int decimals) {
 		builder.append("round(");
 		field(field);
 		builder.append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder format (Fieldable field, String format) {
+	public T format (Fieldable field, String format) {
 		builder.append("format(");
 		field(field);
 		builder.append(",").append(format).append(")");
-		return this;
+		return (T)this;
 	}
 
-	public Builder where (Jointer jointer) {
+	public T where (Jointer jointer) {
 		where();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder and (Jointer jointer) {
+	public T and (Jointer jointer) {
 		and();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder or (Jointer jointer) {
+	public T or (Jointer jointer) {
 		or();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder rs (Jointer jointer) {
+	public T rs (Jointer jointer) {
 		rs();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder ls (Jointer jointer) {
+	public T ls (Jointer jointer) {
 		ls();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder cases (Jointer jointer) {
+	public T cases (Jointer jointer) {
 		cases();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder when (Jointer jointer) {
+	public T when (Jointer jointer) {
 		when();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder then (Jointer jointer) {
+	public T then (Jointer jointer) {
 		then();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
-	public Builder elses (Jointer jointer) {
+	public T elses (Jointer jointer) {
 		elses();
 		recursionJointer(jointer);
-		return this;
+		return (T)this;
 	}
 
 	public enum Type{

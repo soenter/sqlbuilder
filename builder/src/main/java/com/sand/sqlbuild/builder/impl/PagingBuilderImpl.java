@@ -12,16 +12,13 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public class PagingBuilderImpl implements PagingBuilder {
+public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements PagingBuilder {
 	
-	private Builder selectBuilder;
-	private Builder fromBuilder;
-	private Builder whereBuilder;
-	private Builder orderBuilder;
-	private Builder groupbyBuilder;
-
-	private Builder currentBuilder;
-
+	private Builder<PagingBuilder> selectBuilder;
+	private Builder<PagingBuilder> fromBuilder;
+	private Builder<PagingBuilder> whereBuilder;
+	private Builder<PagingBuilder> orderBuilder;
+	private Builder<PagingBuilder> groupbyBuilder;
 
 	private BuildResult selectBr;
 	private BuildResult fromBr;
@@ -35,7 +32,7 @@ public class PagingBuilderImpl implements PagingBuilder {
 	PagingBuilderImpl(){
 		init();
 	}
-	
+
 	private void init(){
 		selectBuilder = BuilderFactory.create();
 		fromBuilder = BuilderFactory.create();
@@ -49,110 +46,71 @@ public class PagingBuilderImpl implements PagingBuilder {
 		orderBr = null;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#select(com.sand.abacus.util.data.sqlbuild.Field[])
-	 */
-	public PagingBuilder select(Field<?>... fields) {
-		selectBuilder.select(fields);
-
-		currentBuilder = selectBuilder;
+	@Override
+	public PagingBuilder select () {
+		selectBuilder.select();
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#from(com.sand.abacus.util.data.sqlbuild.Table)
-	 */
+	@Override
+	public PagingBuilder select (Fieldable... fields) {
+		selectBuilder.select(fields);
+		return this;
+	}
+
 	public PagingBuilder from(Class<? extends Table> clazz, Field<?> pk) {
 		fromBuilder.from(clazz);
 		fromPk = pk;
-		currentBuilder = fromBuilder;
 		return this;
 	}
 
+	@Override
 	public PagingBuilder from(Class<? extends Table> clazz) {
 		fromBuilder.from(clazz);
-		currentBuilder = fromBuilder;
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#innerJoin(com.sand.abacus.util.data.sqlbuild.Table)
-	 */
-	public PagingBuilder innerJoin(Class<? extends Table> clazz) {
-		currentBuilder.innerJoin(clazz);
+	@Override
+	public PagingBuilder from (Class<? extends Table> first, Class<? extends Table>... clazzs) {
+		fromBuilder.from(first, clazzs);
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#leftJoin(com.sand.abacus.util.data.sqlbuild.Table)
-	 */
-	public PagingBuilder leftJoin(Class<? extends Table> clazz) {
-		currentBuilder.leftJoin(clazz);
+	@Override
+	public PagingBuilder where () {
+		whereBuilder.where();
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#rightJoin(com.sand.abacus.util.data.sqlbuild.Table)
-	 */
-	public PagingBuilder rightJoin(Class<? extends Table> clazz) {
-		currentBuilder.rightJoin(clazz);
+	@Override
+	public PagingBuilder where (Filter<?> filter) {
+		whereBuilder.where(filter);
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#on(com.sand.abacus.util.data.sqlbuild.Field)
-	 */
-	public PagingBuilder on(Filter<?> filter) {
-		currentBuilder.on(filter);
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#where(com.sand.abacus.util.data.sqlbuild.Filter[])
-	 */
 	public PagingBuilder where(Filter<?>... filters) {
 		BuilderUtils.joinFiltersByAnd(whereBuilder, filters);
-		currentBuilder = whereBuilder;
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#where(com.sand.abacus.util.data.sqlbuild.FilterBuilder)
-	 */
+	@Deprecated
 	public PagingBuilder where(FilterBuilder filterBuilder) {
 		whereBuilder.where(filterBuilder);
-		currentBuilder = whereBuilder;
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#and(com.sand.abacus.util.data.sqlbuild.Filter)
-	 */
-	public PagingBuilder and(Filter<?> filter) {
-		currentBuilder.and(filter);
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#or(com.sand.abacus.util.data.sqlbuild.Filter)
-	 */
-	public PagingBuilder or(Filter<?> filter) {
-		currentBuilder.or(filter);
-		return this;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#orderBy(com.sand.abacus.util.data.sqlbuild.Order)
-	 */
+	@Override
 	public PagingBuilder orderBy(Order... orders) {
 		orderBuilder.orderBy(orders);
-		currentBuilder = orderBuilder;
 		return this;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingCount()
-	 */
+	@Override
+	public PagingBuilder groupBy (Fieldable... fields) {
+		groupbyBuilder.groupBy(fields);
+		return this;
+	}
+
 	public BuildResult buildPagingCount() {
 		//构建结果
 		buildResult();
@@ -185,9 +143,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.sand.abacus.util.data.sqlbuild.PagingBuilder#buildPagingList()
-	 */
 	public BuildResult buildPagingList(int pageStart, int pageEnd, int pageLimit) {
 		checkPageArgs(pageStart, pageEnd, pageLimit);
 		pageStart = pageStart - 1;
@@ -254,48 +209,6 @@ public class PagingBuilderImpl implements PagingBuilder {
 		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
 	}
 
-	public PagingBuilder groupBy (Field<?>... fields) {
-		groupbyBuilder.groupBy(fields);
-		currentBuilder = groupbyBuilder;
-		return this;
-	}
-
-	public PagingBuilder limit (int limit) {
-		currentBuilder.limit(limit);
-		return this;
-	}
-
-	public PagingBuilder rownum (int rownum) {
-		currentBuilder.rownum(rownum);
-		return this;
-	}
-
-	public PagingBuilder ls () {
-		currentBuilder.ls();
-		return this;
-	}
-
-	public PagingBuilder rs () {
-		currentBuilder.rs();
-		return this;
-	}
-
-	public PagingBuilder rs (Filter<?> filter) {
-		currentBuilder.rs(filter);
-		return this;
-	}
-
-	public PagingBuilder ls (Filter<?> filter) {
-		currentBuilder.ls(filter);
-		return this;
-	}
-
-	public PagingBuilder func (String funName) {
-		currentBuilder.func(funName);
-		return this;
-	}
-
-
 	public BuildResult buildMySqlPagingList (int pageStart, int pageEnd, int pageLimit) {
 		checkPageArgs(pageStart, pageEnd, pageLimit);
 		pageStart = pageStart - 1;
@@ -330,6 +243,11 @@ public class PagingBuilderImpl implements PagingBuilder {
 		builder.append("limit ").append(pageStart * pageLimit).append(", ").append(pageEnd * pageLimit);
 		System.out.println("mysql sql:" + builder.toString());
 		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
+	}
+
+	@Override
+	public BuildResult build () {
+		throw new UnsupportedOperationException("PagingBuilder 不支持 build() 方法");
 	}
 
 	private void buildResult(){
