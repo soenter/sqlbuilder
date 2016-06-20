@@ -115,14 +115,15 @@ public class PersonExample {
 	public void test_insert(){
 		Builder builder = BuilderFactory.create()
 				.insert(PersonPo.class, new Setter[]{
-						PersonPo.name.eq("tom"),
-						PersonPo.email.eq("tom@xx.com"),
-						PersonPo.phone.eq("13500000000"),
+						PersonPo.name.eq("tom3"),
+						PersonPo.email.eq("tom3@xx.com"),
+						PersonPo.phone.eq(""),
 						PersonPo.age.eq(22)
 				});
 
 		BuildResult result = builder.build();
 		System.out.println(result.getSql());
+		System.out.println(result.getParameters());
 		int num = dao.insert(result);
 		System.out.println("插入条数：" + num);
 
@@ -486,7 +487,8 @@ public class PersonExample {
 				.select(PersonPo.all)
 				.from(PersonPo.class, PersonPo.name)
 				.where(PersonPo.age.gt(1))
-				.and().func(" 1=1 ")
+				.and(PersonPo.email.lk("tom"))
+				.and(PersonPo.name.lk("tom"))
 				.orderBy(PersonPo.name.asc());
 
 

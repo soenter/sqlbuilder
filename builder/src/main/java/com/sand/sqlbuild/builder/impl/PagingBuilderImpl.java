@@ -14,11 +14,14 @@ import java.util.List;
  */
 public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements PagingBuilder {
 	
-	private Builder<PagingBuilder> selectBuilder;
-	private Builder<PagingBuilder> fromBuilder;
-	private Builder<PagingBuilder> whereBuilder;
-	private Builder<PagingBuilder> orderBuilder;
-	private Builder<PagingBuilder> groupbyBuilder;
+	private PagingBuilderImpl selectBuilder;
+	private PagingBuilderImpl fromBuilder;
+	private PagingBuilderImpl whereBuilder;
+	private PagingBuilderImpl orderBuilder;
+	private PagingBuilderImpl groupbyBuilder;
+
+	private PagingBuilderImpl mainBuilder;
+
 
 	private BuildResult selectBr;
 	private BuildResult fromBr;
@@ -28,108 +31,143 @@ public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements Pag
 	private Field<?> fromPk;
 	
 	private List<Object> params;
-	
-	PagingBuilderImpl(){
-		init();
+
+	private boolean isPartedBuilder = false;
+
+	PagingBuilderImpl(boolean isRootBuilder){
+		if(isRootBuilder){
+			selectBuilder = new PagingBuilderImpl(false);
+			fromBuilder = new PagingBuilderImpl(false);
+			whereBuilder = new PagingBuilderImpl(false);
+			orderBuilder = new PagingBuilderImpl(false);
+			groupbyBuilder = new PagingBuilderImpl(false);
+		}
 	}
 
-	private void init(){
-		selectBuilder = BuilderFactory.create();
-		fromBuilder = BuilderFactory.create();
-		whereBuilder = BuilderFactory.create();
-		orderBuilder = BuilderFactory.create();
-		groupbyBuilder = BuilderFactory.create();
+	public PagingBuilderImpl initBuilders(){
+		selectBuilder.initParted(this);
+		fromBuilder.initParted(this);
+		whereBuilder.initParted(this);
+		orderBuilder.initParted(this);
+		groupbyBuilder.initParted(this);
+		return this;
+	}
 
-		selectBr = null;
-		fromBr = null;
-		whereBr = null;
-		orderBr = null;
+	private PagingBuilderImpl initParted (PagingBuilderImpl pagingBuilder){
+		selectBuilder = pagingBuilder.selectBuilder;
+		fromBuilder = pagingBuilder.fromBuilder;
+		whereBuilder = pagingBuilder.whereBuilder;
+		orderBuilder = pagingBuilder.orderBuilder;
+		groupbyBuilder = pagingBuilder.groupbyBuilder;
+
+		mainBuilder = pagingBuilder;
+		isPartedBuilder = true;
+		return this;
 	}
 
 	@Override
 	public PagingBuilder select () {
-		selectBuilder.select();
-		return this;
+		if(isPartedBuilder && this.equals(selectBuilder)){
+			return super.select();
+		}
+		return selectBuilder.select();
 	}
 
 	@Override
 	public PagingBuilder select (Fieldable... fields) {
-		selectBuilder.select(fields);
-		return this;
+		if(isPartedBuilder && this.equals(selectBuilder)){
+			return super.select(fields);
+		}
+		return selectBuilder.select(fields);
 	}
 
 	public PagingBuilder from(Class<? extends Table> clazz, Field<?> pk) {
-		fromBuilder.from(clazz);
-		fromPk = pk;
-		return this;
+		mainBuilder.fromPk = pk;
+		return from(clazz);
 	}
 
 	@Override
 	public PagingBuilder from(Class<? extends Table> clazz) {
-		fromBuilder.from(clazz);
-		return this;
+		if(isPartedBuilder && this.equals(fromBuilder)){
+			return super.from(clazz);
+		}
+		return fromBuilder.from(clazz);
 	}
 
 	@Override
 	public PagingBuilder from (Class<? extends Table> first, Class<? extends Table>... clazzs) {
-		fromBuilder.from(first, clazzs);
-		return this;
+		if(isPartedBuilder && this.equals(fromBuilder)){
+			return super.from(first, clazzs);
+		}
+		return fromBuilder.from(first, clazzs);
 	}
 
 	@Override
 	public PagingBuilder where () {
-		whereBuilder.where();
-		return this;
+		if(isPartedBuilder && this.equals(whereBuilder)){
+			return super.where ();
+		}
+		return whereBuilder.where();
 	}
 
 	@Override
 	public PagingBuilder where (Filter<?> filter) {
-		whereBuilder.where(filter);
-		return this;
+		if(isPartedBuilder && this.equals(whereBuilder)){
+			return super.where (filter);
+		}
+		return whereBuilder.where(filter);
 	}
 
 	@Deprecated
 	public PagingBuilder where(FilterBuilder filterBuilder) {
-		whereBuilder.where(filterBuilder);
-		return this;
+		if(isPartedBuilder && this.equals(whereBuilder)){
+			return super.where (filterBuilder);
+		}
+		return whereBuilder.where(filterBuilder);
 	}
 
 	@Override
 	public PagingBuilder where (Jointer jointer) {
-		whereBuilder.where(jointer);
-		return this;
-	}
-
-	@Override
-	public PagingBuilder orderBy(Order... orders) {
-		orderBuilder.orderBy(orders);
-		return this;
+		if(isPartedBuilder && this.equals(whereBuilder)){
+			return super.where (jointer);
+		}
+		return whereBuilder.where(jointer);
 	}
 
 	@Override
 	public PagingBuilder groupBy (Fieldable... fields) {
-		groupbyBuilder.groupBy(fields);
-		return this;
+		if(isPartedBuilder && this.equals(groupbyBuilder)){
+			return super.groupBy (fields);
+		}
+		return groupbyBuilder.groupBy(fields);
+	}
+
+	@Override
+	public PagingBuilder orderBy(Order... orders) {
+		if(isPartedBuilder && this.equals(orderBuilder)){
+			return super.orderBy (orders);
+		}
+		return orderBuilder.orderBy(orders);
 	}
 
 	public BuildResult buildPagingCount() {
 		//构建结果
 		buildResult();
 		StringBuilder builder = new StringBuilder();
-		params = new ArrayList<Object>();
+		mainBuilder.params = new ArrayList<Object>();
 		
 		builder.append("select count(*) ");
 		
 		//from builder
-		builder.append(fromBr.getSql());
+		builder.append(mainBuilder.fromBr.getSql());
 
 		//where builder
-		builder.append(whereBr.getSql());
-		if(whereBr.getParameters() != null){
-			params.addAll(whereBr.getParameters());
+		builder.append(mainBuilder.whereBr.getSql());
+		if(mainBuilder.whereBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.whereBr.getParameters());
 		}
 
-		return new BuildResultImpl(builder, params, null, null);
+		return new BuildResultImpl(builder, mainBuilder.params, null, null);
 	}
 
 	private void checkPageArgs(int pageStart, int pageEnd, int pageLimit){
@@ -151,63 +189,63 @@ public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements Pag
 		//构建结果
 		buildResult();
 		StringBuilder builder = new StringBuilder();
-		params = new ArrayList<Object>();
+		mainBuilder.params = new ArrayList<Object>();
 		
 		builder.append("with rownum_table as ( select row_number() over( ");
 		
 		//order builder
-		builder.append(orderBr.getSql());
+		builder.append(mainBuilder.orderBr.getSql());
 		builder.append(") rownum_table_rn , ");
 		
-		if(fromPk == null){
+		if(mainBuilder.fromPk == null){
 			throw new IllegalArgumentException("oracle 分页查询 from 方法中传入的pk字段不能为null");
 		}
 		
-		builder.append(fromPk.getFullName()).append(" ");
+		builder.append(mainBuilder.fromPk.getFullName()).append(" ");
 		
 		//from builder
-		builder.append(fromBr.getSql()).append(" ");
-		if(fromBr.getParameters() != null){
-			params.addAll(fromBr.getParameters());
+		builder.append(mainBuilder.fromBr.getSql()).append(" ");
+		if(mainBuilder.fromBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.fromBr.getParameters());
 		}
 
 		//where builder
-		builder.append(whereBr.getSql()).append(" ");
-		if(whereBr.getParameters() != null){
-			params.addAll(whereBr.getParameters());
+		builder.append(mainBuilder.whereBr.getSql()).append(" ");
+		if(mainBuilder.whereBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.whereBr.getParameters());
 		}
 		
 		builder.append(") ");
 		
 		//select builder
-		builder.append(selectBr.getSql()).append(" ");
-		if(selectBr.getParameters() != null){
-			params.addAll(selectBr.getParameters());
+		builder.append(mainBuilder.selectBr.getSql()).append(" ");
+		if(mainBuilder.selectBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.selectBr.getParameters());
 		}
 		
 		//from
-		builder.append(fromBr.getSql()).append(" ");
-		if(fromBr.getParameters() != null){
-			params.addAll(fromBr.getParameters());
+		builder.append(mainBuilder.fromBr.getSql()).append(" ");
+		if(mainBuilder.fromBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.fromBr.getParameters());
 		}
 		
 		//inner join rownum_table
-		builder.append("inner join rownum_table on ").append(fromPk.getFullName())
-		.append(" = ").append("rownum_table.").append(fromPk.getName())
+		builder.append("inner join rownum_table on ").append(mainBuilder.fromPk.getFullName())
+		.append(" = ").append("rownum_table.").append(mainBuilder.fromPk.getName())
 		.append(" and rownum_table.rownum_table_rn between ? and ? ");
-		params.add(pageStart * pageLimit + 1);
-		params.add(pageEnd * pageLimit);
+		mainBuilder.params.add(pageStart * pageLimit + 1);
+		mainBuilder.params.add(pageEnd * pageLimit);
 		
 		//where
-		builder.append(whereBr.getSql()).append(" ");
-		if(whereBr.getParameters() != null){
-			params.addAll(whereBr.getParameters());
+		builder.append(mainBuilder.whereBr.getSql()).append(" ");
+		if(mainBuilder.whereBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.whereBr.getParameters());
 		}
 		
 		//order 
-		builder.append(orderBr.getSql()).append(" ");
+		builder.append(mainBuilder.orderBr.getSql()).append(" ");
 
-		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
+		return new BuildResultImpl(builder, mainBuilder.params, mainBuilder.selectBr.getSelectFields(), mainBuilder.selectBr.getEmptyValuesFields());
 	}
 
 	public BuildResult buildMySqlPagingList (int pageStart, int pageEnd, int pageLimit) {
@@ -217,52 +255,54 @@ public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements Pag
 		//构建结果
 		buildResult();
 		StringBuilder builder = new StringBuilder();
-		params = new ArrayList<Object>();
+		mainBuilder.params = new ArrayList<Object>();
 
 		//select builder
-		builder.append(selectBr.getSql()).append(" ");
-		if(selectBr.getParameters() != null){
-			params.addAll(selectBr.getParameters());
+		builder.append(mainBuilder.selectBr.getSql()).append(" ");
+		if(mainBuilder.selectBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.selectBr.getParameters());
 		}
 
 		//from
-		builder.append(fromBr.getSql()).append(" ");
-		if(fromBr.getParameters() != null){
-			params.addAll(fromBr.getParameters());
+		builder.append(mainBuilder.fromBr.getSql()).append(" ");
+		if(mainBuilder.fromBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.fromBr.getParameters());
 		}
 
 		//where
-		builder.append(whereBr.getSql()).append(" ");
-		if(whereBr.getParameters() != null){
-			params.addAll(whereBr.getParameters());
+		builder.append(mainBuilder.whereBr.getSql()).append(" ");
+		if(mainBuilder.whereBr.getParameters() != null){
+			mainBuilder.params.addAll(mainBuilder.whereBr.getParameters());
 		}
 
 		//order
-		builder.append(orderBr.getSql()).append(" ");
+		builder.append(mainBuilder.orderBr.getSql()).append(" ");
 
 		// limit
 		builder.append("limit ").append(pageStart * pageLimit).append(", ").append(pageEnd * pageLimit);
-		System.out.println("mysql sql:" + builder.toString());
-		return new BuildResultImpl(builder, params, selectBr.getSelectFields(), selectBr.getEmptyValuesFields());
+		return new BuildResultImpl(builder, mainBuilder.params, mainBuilder.selectBr.getSelectFields(), mainBuilder.selectBr.getEmptyValuesFields());
 	}
 
 	@Override
 	public BuildResult build () {
+		if(isPartedBuilder){
+			return super.build ();
+		}
 		throw new UnsupportedOperationException("PagingBuilder 不支持 build() 方法");
 	}
 
 	private void buildResult(){
-		if(selectBr == null){
-			selectBr = selectBuilder.build();
+		if(mainBuilder.selectBr == null){
+			mainBuilder.selectBr = selectBuilder.build();
 		}
-		if(fromBr == null){
-			fromBr = fromBuilder.build();
+		if(mainBuilder.fromBr == null){
+			mainBuilder.fromBr = fromBuilder.build();
 		}
-		if(whereBr == null){
-			whereBr = whereBuilder.build();
+		if(mainBuilder.whereBr == null){
+			mainBuilder.whereBr = whereBuilder.build();
 		}
-		if(orderBr == null){
-			orderBr = orderBuilder.build();
+		if(mainBuilder.orderBr == null){
+			mainBuilder.orderBr = orderBuilder.build();
 		}
 	}
 

@@ -12,6 +12,6 @@ import com.sand.sqlbuild.builder.PagingBuilder;
 public class PagingBuilderFactory {
 
 	public static PagingBuilder create(){
-		return new PagingBuilderImpl();
+		return new PagingBuilderImpl(true).initBuilders();
 	}
 }
