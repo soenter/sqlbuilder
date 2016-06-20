@@ -4,7 +4,7 @@ package com.sand.sqlbuild.builder;
  * 双向链表结构
  * @author : sun.mt
  * @create : 16-5-11 下午2:41
- * @since : 0.0.2
+ * @since : 0.2.0
  */
 public interface Jointer extends Fieldable {
 
@@ -227,6 +227,15 @@ public interface Jointer extends Fieldable {
 	 * @return
 	 */
 	Jointer bta (Object partner1, Object partner2);
+
+
+	Jointer and (Filter<?> filter);
+
+	Jointer and();
+
+	Jointer or (Filter<?> filter);
+
+	Jointer or();;
 
 
 }

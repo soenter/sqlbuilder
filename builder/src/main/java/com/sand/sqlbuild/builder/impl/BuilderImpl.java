@@ -380,6 +380,8 @@ public class BuilderImpl <T extends Builder> implements Builder<T> {
 			} else {
 				builder.append(" ").append(((Field) partner).getFullName());
 			}
+		} else if (partner instanceof Filter) {
+			filter((Filter) partner);
 		} else {
 			builder.append(" ?");
 			getParams().add(partner);

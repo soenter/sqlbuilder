@@ -88,14 +88,15 @@ public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements Pag
 		return this;
 	}
 
-	public PagingBuilder where(Filter<?>... filters) {
-		BuilderUtils.joinFiltersByAnd(whereBuilder, filters);
-		return this;
-	}
-
 	@Deprecated
 	public PagingBuilder where(FilterBuilder filterBuilder) {
 		whereBuilder.where(filterBuilder);
+		return this;
+	}
+
+	@Override
+	public PagingBuilder where (Jointer jointer) {
+		whereBuilder.where(jointer);
 		return this;
 	}
 

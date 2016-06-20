@@ -13,10 +13,7 @@
  */
 package com.sand.sqlbuild.builder.impl;
 
-import com.sand.sqlbuild.builder.Field;
-import com.sand.sqlbuild.builder.Fieldable;
-import com.sand.sqlbuild.builder.Setter;
-import com.sand.sqlbuild.builder.ValueType;
+import com.sand.sqlbuild.builder.*;
 
 /**
  *
@@ -75,4 +72,5 @@ public class SetterImpl <T> implements Setter<T> {
 	public boolean isEmptyValue () {
 		return valueType == ValueType.NO_VALUE;
 	}
+
 }

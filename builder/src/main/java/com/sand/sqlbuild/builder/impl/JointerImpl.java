@@ -1,9 +1,6 @@
 package com.sand.sqlbuild.builder.impl;
 
-import com.sand.sqlbuild.builder.Field;
-import com.sand.sqlbuild.builder.FieldUtils;
-import com.sand.sqlbuild.builder.Fieldable;
-import com.sand.sqlbuild.builder.Jointer;
+import com.sand.sqlbuild.builder.*;
 
 /**
  * @author : sun.mt
@@ -212,6 +209,22 @@ public class JointerImpl implements Jointer {
 
 	public Jointer divide () {
 		return divide(null);
+	}
+
+	public Jointer and (Filter<?> filter) {
+		return join(" and ", filter);
+	}
+
+	public Jointer and () {
+		return join(" and ", null);
+	}
+
+	public Jointer or (Filter<?> filter) {
+		return join(" or ", filter);
+	}
+
+	public Jointer or () {
+		return join(" or ", null);
 	}
 
 	/*****************************************************************************/
