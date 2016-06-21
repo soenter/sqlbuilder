@@ -149,11 +149,13 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 				public R mapRow (ResultSet rs, int rowNum) throws SQLException {
 					jdbcTypeToJavaType(rs, buildResult.getSelectFields(), po);
+					po.setEmptyResult(false);
 					return po;
 				}
 
 			});
 		} catch (EmptyResultDataAccessException e) {
+			po.setEmptyResult(true);
 			return po;
 		} catch (DataAccessException e){
 			LOGGER.error("data access exceptions parameters : {}", Arrays.toString(params));

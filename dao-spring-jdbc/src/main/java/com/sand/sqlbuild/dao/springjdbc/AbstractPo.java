@@ -16,6 +16,8 @@ import java.util.Map;
 public abstract class AbstractPo implements Table, Iterable<Map.Entry<Field<?>, Object>> {
 	private final Map<Field<?>, Object> values;
 
+	private boolean isEmptyResult;
+
 	public AbstractPo(){
 		values = new HashMap<Field<?>, Object>();
 	}
@@ -58,4 +60,11 @@ public abstract class AbstractPo implements Table, Iterable<Map.Entry<Field<?>, 
 		return values.containsKey(field);
 	}
 
+	public boolean isEmptyResult () {
+		return isEmptyResult;
+	}
+
+	public void setEmptyResult (boolean emptyResult) {
+		isEmptyResult = emptyResult;
+	}
 }
