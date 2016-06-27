@@ -1,7 +1,6 @@
 package com.sand.sqlbuild.dao.springjdbc.po;
 
 import com.sand.sqlbuild.builder.Field;
-import com.sand.sqlbuild.builder.Table;
 import com.sand.sqlbuild.builder.impl.FieldFactory;
 import com.sand.sqlbuild.dao.springjdbc.AbstractPo;
 
@@ -28,7 +27,20 @@ public class PersonPo extends AbstractPo{
 			age
 	};
 
+
 	public String getName () {
 		return TABLE_NAME;
+	}
+
+	public static Field<String> getEmail () {
+		return email;
+	}
+
+	public static Field<String> getPhone () {
+		return phone;
+	}
+
+	public static Field<Integer> getAge () {
+		return age;
 	}
 }

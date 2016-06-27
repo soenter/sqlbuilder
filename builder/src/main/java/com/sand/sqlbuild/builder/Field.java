@@ -21,6 +21,12 @@ public interface Field<T> extends Fieldable {
 	
 	String getTableName ();
 
+	String getJavaFieldName();
+
+	String getReflactGetterName();
+
+	String getReflactSetterName();
+
 	/**
 	 * 在一个范围内 (in)
 	 *

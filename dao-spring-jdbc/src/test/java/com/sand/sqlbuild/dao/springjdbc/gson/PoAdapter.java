@@ -4,6 +4,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import com.sand.sqlbuild.builder.Field;
+import com.sand.sqlbuild.builder.FieldUtils;
 import com.sand.sqlbuild.dao.springjdbc.AbstractPo;
 import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
 
@@ -28,7 +29,7 @@ public class PoAdapter extends TypeAdapter<AbstractPo> {
 			Field<?> field = entry.getKey();
 			Object value = entry.getValue();
 
-			jsonWriter.name(underlineStypeToHumpStyle(field.getName())).value(value == null?null:value.toString());
+			jsonWriter.name(FieldUtils.underlineToHumpStyle(field.getName())).value(value == null?null:value.toString());
 		}
 
 		jsonWriter.endObject();
@@ -40,25 +41,9 @@ public class PoAdapter extends TypeAdapter<AbstractPo> {
 		throw new RuntimeException("不支持解析 Json 字符串到 PO 对象");
 	}
 
-	public static String underlineStypeToHumpStyle(String field){
-
-		if(field == null || field.indexOf("_") == -1){
-			return field;
-		}
-
-		StringBuilder sb = new StringBuilder(field.toLowerCase());
-
-		int index = 0;
-		while((index = sb.indexOf("_")) != -1){
-			char c = sb.charAt(index + 1);
-			sb.replace(index, index + 2, String.valueOf(c).toUpperCase());
-		}
-
-		return sb.toString();
-	}
 
 	public static void  main(String[] args){
 
-		System.out.println(underlineStypeToHumpStyle("INSERT_TIME_uu_yy"));
+		System.out.println(FieldUtils.underlineToHumpStyle("INSERT_TIME_uu_yy"));
 	}
 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.sand.sqlbuild</groupId>
         <artifactId>sqlbuild</artifactId>
-        <version>0.1.20</version>
+        <version>0.1.21</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -59,6 +59,17 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.21</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.21</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

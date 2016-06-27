@@ -57,4 +57,32 @@ public class FieldUtils {
 
 		return arg2;
 	}
+
+	public static String underlineToHumpStyle(String field){
+
+		if(field == null) return null;
+
+		if(field.indexOf("_") == -1){
+			return field.toLowerCase();
+		}
+
+		StringBuilder sb = new StringBuilder(field.toLowerCase());
+
+		int index = 0;
+		while((index = sb.indexOf("_")) != -1){
+			char c = sb.charAt(index + 1);
+			sb.replace(index, index + 2, String.valueOf(c).toUpperCase());
+		}
+
+		return sb.toString();
+	}
+
+	public static String createAsName(String tableTame, String fieldName){
+		String name = (tableTame + fieldName).replace("_", "");
+		//oracle 列名称长度不能大于30 FIXME 汉字未处理
+		if (name.length() > 30) {
+			return name.substring(name.length() - 30);
+		}
+		return name;
+	}
 }

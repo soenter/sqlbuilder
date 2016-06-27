@@ -27,6 +27,10 @@ public class FieldImpl<T> implements Field<T> {
 
 	private Class<T> asJavaType;
 
+	private String convertToJavaFieldName;
+
+	private String asName;
+
 	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType) {
 
 		if (null == tableTame || null == fieldName || null == javaType) {
@@ -37,8 +41,24 @@ public class FieldImpl<T> implements Field<T> {
 		this.fieldName = fieldName;
 		this.javaType = javaType;
 
+		this.asName = FieldUtils.createAsName(tableTame, fieldName);
 	}
 
+	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, FieldNameConverter fieldNameConverter) {
+
+		if (null == tableTame || null == fieldName || null == javaType) {
+			throw new IllegalArgumentException("FieldImpl参数都不能为null");
+		}
+
+		this.tableTame = tableTame;
+		this.fieldName = fieldName;
+		this.javaType = javaType;
+		convertToJavaFieldName = fieldNameConverter.convert(fieldName);
+
+		this.asName = FieldUtils.createAsName(tableTame, fieldName);
+	}
+
+	@Deprecated
 	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, String operator, T operValue) {
 
 		if (null == tableTame || null == fieldName || null == javaType) {
@@ -52,8 +72,10 @@ public class FieldImpl<T> implements Field<T> {
 		this.operator = operator;
 		this.operValue = operValue;
 
+		this.asName = FieldUtils.createAsName(tableTame, fieldName);
 	}
 
+	@Deprecated
 	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, String operator, Field<?> operField) {
 
 		if (null == tableTame || null == fieldName || null == javaType) {
@@ -80,13 +102,10 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 	public String getAsName () {
-		String name = (tableTame + fieldName).replace("_", "");
-		//oracle 列名称长度不能大于30 FIXME 汉字未处理
-		if (name.length() > 30) {
-			return name.substring(name.length() - 30);
-		}
-		return name;
+		return asName;
 	}
+
+
 
 
 	public String getName () {
@@ -96,6 +115,18 @@ public class FieldImpl<T> implements Field<T> {
 
 	public String getTableName () {
 		return tableTame;
+	}
+
+	public String getJavaFieldName () {
+		return convertToJavaFieldName;
+	}
+
+	public String getReflactGetterName () {
+		return "get" + convertToJavaFieldName.substring(0 ,1).toUpperCase() + convertToJavaFieldName.substring(1);
+	}
+
+	public String getReflactSetterName () {
+		return "set" + convertToJavaFieldName.substring(0 ,1).toUpperCase() + convertToJavaFieldName.substring(1);
 	}
 
 
@@ -398,6 +429,7 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 	public Field<?> as (String alias, Class<?> asJavaType) {
+		//FIXME
 		return new FieldImpl(tableTame, fieldName, javaType)
 				.cloneFrom(this)
 				.setAlias(alias)
