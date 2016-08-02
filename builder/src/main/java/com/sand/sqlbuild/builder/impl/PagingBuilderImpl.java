@@ -12,7 +12,7 @@ import java.util.List;
  * @since 1.0.0
  *
  */
-public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements PagingBuilder {
+public class PagingBuilderImpl extends BaseBuilderImpl<PagingBuilder> implements PagingBuilder {
 	
 	private PagingBuilderImpl selectBuilder;
 	private PagingBuilderImpl fromBuilder;
@@ -278,8 +278,8 @@ public class PagingBuilderImpl extends BuilderImpl<PagingBuilder> implements Pag
 		//order
 		builder.append(mainBuilder.orderBr.getSql()).append(" ");
 
-		// limit
-		builder.append("limit ").append(pageStart * pageLimit).append(", ").append(pageEnd * pageLimit);
+		// limit TODO 优化大数据量分页效率
+		builder.append("limit ").append(pageStart * pageLimit).append(", ").append(pageLimit * (pageEnd - pageStart));
 		return new BuildResultImpl(builder, mainBuilder.params, mainBuilder.selectBr.getSelectFields(), mainBuilder.selectBr.getEmptyValuesFields());
 	}
 

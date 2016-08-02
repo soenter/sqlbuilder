@@ -1,15 +1,16 @@
 package com.sand.sqlbuild.dao.springjdbc;
 
+import com.sand.sqlbuild.builder.BuilderUtils;
 import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
+import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.sand.sqlbuild.dao.springjdbc.po.PersonPo.*;
+import static com.sand.sqlbuild.dao.springjdbc.po.PersonPo.name;
 
 
 
@@ -91,6 +92,8 @@ public class PerformanceTest {
 
 		long start = System.currentTimeMillis();
 
+
+
 		Method setName = PersonVo.class.getMethod("setName", String.class);
 		Method setAge = PersonVo.class.getMethod("setAge", int.class);
 		Method setEmail = PersonVo.class.getMethod("setEmail", String.class);
@@ -111,4 +114,58 @@ public class PerformanceTest {
 
 	}
 
+
+	@Test
+	public void test_reflact_beanutils_performance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+
+
+		long start = System.currentTimeMillis();
+
+
+		for (int i = 0; i < 10000 * 100; i++){
+			PersonVo vo = new PersonVo();
+			BeanUtils.setProperty(vo, "name", "tom" + i);
+			BeanUtils.setProperty(vo, "age", i);
+			BeanUtils.setProperty(vo, "email", "tom" + i + "@x.xx");
+			BeanUtils.setProperty(vo, "phone", "12500000000");
+		}
+
+		long end = System.currentTimeMillis();
+
+		System.out.println("用时：" + (end - start));
+
+	}
+	@Test
+	public void test_reflact_new_instance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+
+
+		long start = System.currentTimeMillis();
+
+
+		for (int i = 0; i < 10000 * 100; i++){
+			BuilderUtils.newTable(PersonPo.class);
+		}
+
+		long end = System.currentTimeMillis();
+
+		System.out.println("用时：" + (end - start));
+
+	}
+
+	@Test
+	public void test_new_instance() throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+
+
+		long start = System.currentTimeMillis();
+
+
+		for (int i = 0; i < 10000 * 100; i++){
+			new PersonPo();
+		}
+
+		long end = System.currentTimeMillis();
+
+		System.out.println("用时：" + (end - start));
+
+	}
 }

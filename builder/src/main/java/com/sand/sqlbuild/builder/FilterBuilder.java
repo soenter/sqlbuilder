@@ -7,6 +7,7 @@ package com.sand.sqlbuild.builder;
  * @since 1.0.0
  *
  */
+@Deprecated
 public interface FilterBuilder {
 
 	/**

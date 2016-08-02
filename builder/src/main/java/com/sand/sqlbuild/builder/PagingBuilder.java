@@ -7,7 +7,7 @@ package com.sand.sqlbuild.builder;
  * @since 1.0.0
  *
  */
-public interface PagingBuilder extends Builder<PagingBuilder> {
+public interface PagingBuilder extends BaseBuilder<PagingBuilder> {
 	
 
 	/**

@@ -103,7 +103,7 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 	public <R extends AbstractPo> int[] batchUpdate (BuildResult result, final BatchPoGetter poGetter) {
 
-		checkBatch(result);
+		//checkBatch(result);
 		final List<Field<?>> emptyFiels = result.getEmptyValuesFields();
 
 		return this.getJdbcTemplate().batchUpdate(result.getSql(), new BatchPreparedStatementSetter(){
@@ -122,11 +122,11 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 	}
 
 	private void checkBatch(BuildResult result){
-//		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
-//
-//		if(emptyFiels == null || emptyFiels.isEmpty()){
-//			throw new IllegalArgumentException("批量执行 EmptyValuesFields 不能未空");
-//		}
+		List<Field<?>> emptyFiels = result.getEmptyValuesFields();
+
+		if(emptyFiels == null || emptyFiels.isEmpty()){
+			throw new IllegalArgumentException("批量执行 EmptyValuesFields 不能为null或空");
+		}
 	}
 
 	public int delete(BuildResult buildResult) {

@@ -113,13 +113,14 @@ public class PersonExample {
 	 * insert person(name, email, phone, age) values('tom', 'tom@xx.com','13500000000', 22)
 	 */
 	public void test_insert(){
+
 		Builder builder = BuilderFactory.create()
-				.insert(PersonPo.class, new Setter[]{
+				.insert(PersonPo.class,
 						PersonPo.name.eq("tom3"),
 						PersonPo.email.eq("tom3@xx.com"),
 						PersonPo.phone.eq(""),
 						PersonPo.age.eq(22)
-				});
+				);
 
 		BuildResult result = builder.build();
 		System.out.println(result.getSql());
@@ -134,7 +135,7 @@ public class PersonExample {
 	 * update person set phone = '13500000001', age = 23 where name = 'tom'
 	 */
 	public void test_update(){
-		Builder builder = BuilderFactory.create()
+		Builder builder = BSQL
 				.update(PersonPo.class)
 				.set(new Setter[]{
 						PersonPo.phone.eq("13500000001"),
@@ -197,12 +198,12 @@ public class PersonExample {
 	 */
 	public void test_insert_batch(){
 		Builder builder = BuilderFactory.create()
-				.insert(PersonPo.class, new Setter<?>[]{
+				.insert(PersonPo.class,
 						PersonPo.name.epv(),// setter 值为空
 						PersonPo.email.epv(),
 						PersonPo.phone.epv(),
 						PersonPo.age.epv()
-				});
+				);
 
 		BuildResult result = builder.build();
 		System.out.println(result.getSql());

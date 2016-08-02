@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.sand.sqlbuild</groupId>
         <artifactId>sqlbuild</artifactId>
-        <version>0.1.21</version>
+        <version>0.1.22</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -70,6 +70,19 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- commons-beanutils -->
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -10,6 +10,7 @@ import com.sand.sqlbuild.builder.FilterBuilder;
  * @since 1.0.0
  *
  */
+@SuppressWarnings("unchecked")
 public class BuilderFactory {
 
 	private BuilderFactory(){}
@@ -17,7 +18,8 @@ public class BuilderFactory {
 	public static Builder create(){
 		return new BuilderImpl();
 	}
-	
+
+	@Deprecated
 	public static FilterBuilder createFilterBuilder(){
 		return new FilterBuilderImpl();
 	}
