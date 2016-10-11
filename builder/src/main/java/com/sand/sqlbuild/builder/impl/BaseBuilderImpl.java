@@ -509,7 +509,7 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 
 	private static class TableWarp{
 
-		private Table table;
+		private volatile Table table;
 
 		private Class<? extends Table> clazz;
 
@@ -518,6 +518,13 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 		}
 
 		public Table getTable(){
+			if(table == null){
+				synchronized (this){
+					if(table == null){
+						createTable();
+					}
+				}
+			}
 			return table;
 		}
 
