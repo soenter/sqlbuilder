@@ -360,6 +360,21 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 		return queryForPoList(result, clazz);
 	}
+	
+	public <R extends AbstractPo> Page<R> queryForPage(PagingBuilder builder, Class<R> clazz,Page<R> page){
+		BuildResult result = null;
+		if(databaseType == DatabaseType.ORACLE){
+			result = builder.buildPagingList(page.getPageStart(), page.getPageEnd(), page.getPageLimit());
+		} else if(databaseType == DatabaseType.MYSQL){
+			result = builder.buildMySqlPagingList(page.getPageStart(), page.getPageEnd(), page.getPageLimit());
+		} else {
+			throw new IllegalArgumentException("Query paging list not support database type [" + databaseType + "]");
+		}
+		Long count = queryForPagingCount(builder);
+		page.setTotalCount(count);
+		page.setResult(queryForPoList(result, clazz));
+		return page;
+	}
 
 	public void afterPropertiesSet () throws Exception {
 
