@@ -6,16 +6,12 @@ import com.sand.sqlbuild.builder.impl.PagingBuilderFactory;
 import com.sand.sqlbuild.dao.springjdbc.po.PersonPo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.sql.DriverManager;
 import java.util.*;
 
 /**
