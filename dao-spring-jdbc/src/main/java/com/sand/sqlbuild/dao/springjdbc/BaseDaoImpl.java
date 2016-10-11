@@ -362,6 +362,7 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 	}
 	
 	public <R extends AbstractPo> Page<R> queryForPage(PagingBuilder builder, Class<R> clazz,Page<R> page){
+		Long count = queryForPagingCount(builder);
 		BuildResult result = null;
 		if(databaseType == DatabaseType.ORACLE){
 			result = builder.buildPagingList(page.getPageStart(), page.getPageEnd(), page.getPageLimit());
@@ -370,7 +371,6 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 		} else {
 			throw new IllegalArgumentException("Query paging list not support database type [" + databaseType + "]");
 		}
-		Long count = queryForPagingCount(builder);
 		page.setTotalCount(count);
 		page.setResult(queryForPoList(result, clazz));
 		return page;
