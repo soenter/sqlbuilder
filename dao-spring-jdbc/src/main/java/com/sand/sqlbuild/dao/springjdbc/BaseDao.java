@@ -101,7 +101,7 @@ public interface BaseDao {
 	 * @param buildResult
 	 * @return
 	 */
-	public Map<String,Object> queryForMap(final BuildResult buildResult);
+	public List<Map<String,Object>> queryForList(final BuildResult buildResult);
 	/**
 	 * 插入
 	 *
