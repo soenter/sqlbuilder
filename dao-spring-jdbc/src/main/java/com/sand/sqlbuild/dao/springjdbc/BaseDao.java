@@ -4,6 +4,7 @@ import com.sand.sqlbuild.builder.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author : sun.mt
@@ -95,7 +96,12 @@ public interface BaseDao {
 	 */
 	<R extends AbstractPo> List<R> queryForPoList (BuildResult buildResult, Class<R> clazz);
 
-
+	/**
+	 * 负责查询直接返回Map对象
+	 * @param buildResult
+	 * @return
+	 */
+	public Map<String,Object> queryForMap(final BuildResult buildResult);
 	/**
 	 * 插入
 	 *
