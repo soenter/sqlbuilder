@@ -212,6 +212,19 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 	}
 
+	@Override
+	public Map<String,Object> queryForMap(final BuildResult buildResult){
+		String sql = buildResult.getSql();
+		Object[] params = BuilderUtils.paramsToArray(buildResult);
+		try {
+			return this.getJdbcTemplate().queryForMap(sql,params);
+		} catch (DataAccessException e) {
+			LOGGER.error("data access exceptions parameters : {}", Arrays.toString(params));
+			throw  e;
+		}
+
+	}
+
 	private <R extends AbstractPo> void jdbcTypeToJavaType(ResultSet rs, List<Field<?>> fields, R po) throws SQLException{
 
 		int index = 1;
