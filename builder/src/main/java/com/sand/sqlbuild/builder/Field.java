@@ -249,36 +249,6 @@ public interface Field<T> extends Fieldable {
 
 
 	/**
-	 * 获取操作符
-	 * 
-	 * @return
-	 */
-	String getOperator ();
-	
-	/**
-	 * 获取操作值
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	T getOperValue ();
-
-	/**
-	 * 获取操作字段
-	 * @return
-	 */
-	@Deprecated
-	Field<?> getOperField();
-
-	/**
-	 * 获取操作符
-	 * 
-	 * @return
-	 */
-	@Deprecated
-	boolean hasOperator ();
-
-	/**
 	 * 拼接字段
 	 *
 	 * @return
@@ -329,11 +299,15 @@ public interface Field<T> extends Fieldable {
 	 * @param alias
 	 * @return
 	 */
-	Field<?> as(String alias, Class<?> asJavaType);
+	Fieldable as(String alias, Class<?> asJavaType);
 
-	String getAlias();
+	/**
+	 * 别名
+	 * @param alias
+	 * @return
+	 */
+	Fieldable as(Field<T> alias);
 
-	Class<?> getAliasJavaType();
 
 	//TODO 增加 case when 语法
 }

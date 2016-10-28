@@ -28,7 +28,6 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 	private int valueCount;
 
 
-	boolean isFirstSetFields;
 	boolean isFirstSetSetters;
 	boolean isFirstSetValues;
 	boolean isFirstSetOrders;
@@ -47,7 +46,6 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 		builder = new StringBuilder();
 		fieldCount = 0;
 		valueCount = 0;
-		isFirstSetFields = true;
 		isFirstSetSetters = true;
 		isFirstSetValues = true;
 		isFirstSetOrders = true;
@@ -79,6 +77,7 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 		if(fields == null || (fieldCount = fields.length) == 0){
 			throw new IllegalArgumentException("fields参数不能为null或长度等于0");
 		}
+		boolean isFirstSetFields = true;
 		for (Fieldable field : fields) {
 			if(isFirstSetFields){
 				isFirstSetFields = false;
@@ -90,9 +89,10 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 			if(field instanceof Field){
 				realField = (Field)field;
 				field(realField);
-				if(realField.getAlias() != null && realField.getAliasJavaType() != null){
-					as(realField.getAlias(), realField.getAliasJavaType());
-				} else if(!isUnionFlag) {
+//				if(realField.getAlias() != null && realField.getAliasJavaType() != null){
+//					as(realField.getAlias(), realField.getAliasJavaType());
+//				} else
+				if(!isUnionFlag) {
 					getSelectFields().add(realField);
 				}
 			} else {
@@ -783,7 +783,6 @@ public class BaseBuilderImpl<T extends BaseBuilder> implements BaseBuilder<T> {
 	}
 
 	private void unionInit(){
-		isFirstSetFields = true;
 		isFirstSetSetters = true;
 		isFirstSetValues = true;
 		isFirstSetOrders = true;

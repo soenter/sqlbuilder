@@ -563,4 +563,37 @@ public class PersonExample {
 		}
 
 	}
+
+	@Test
+	/**
+	 * select name, count(1) as count, max(age) as age
+	 * from person
+	 * groug by name
+	 */
+	public void test_select_field_as(){
+		Builder builder = BuilderFactory.create()
+				.select(
+						PersonPo.phone.as(PersonPo.email),
+						PersonPo.phone.as("phone2", String.class)
+				)
+				.from(PersonPo.class)
+				.where(PersonPo.phone.isNotNull());
+
+		BuildResult result = builder.build();
+		System.out.println(result.getSql());
+		List<PersonPo> pos = dao.queryForPoList(result, PersonPo.class);
+
+
+		if(pos == null || pos.size() == 0){
+			//处理空值，注意：可以判断 null，因为传入的是 PersonPo.class
+			System.out.println("没有查询到结果");
+			return;
+		}
+		for(PersonPo po: pos){
+			System.out.println("----------------取值------------------");
+			System.out.println("phone:" + po.getValue(PersonPo.email));
+			System.out.println("phone2:" + po.getValue("phone2", String.class));
+		}
+
+	}
 }

@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class Page<T> implements Serializable{
 	/**
 	 * 
@@ -109,12 +107,12 @@ public class Page<T> implements Serializable{
 	 * @param order 可选值为desc或asc,多个排序字段时用','分隔.
 	 */
 	public void setOrder(final String order) {
-		String lowcaseOrder = StringUtils.lowerCase(order);
+		String lowcaseOrder = order.toLowerCase();
 
 		//检查order字符串的合法值
-		String[] orders = StringUtils.split(lowcaseOrder, ',');
+		String[] orders = lowcaseOrder.split(",");
 		for (String orderStr : orders) {
-			if (!StringUtils.equals(DESC, orderStr) && !StringUtils.equals(ASC, orderStr)) {
+			if (!DESC.equals(orderStr) && !ASC.equals(orderStr)) {
 				throw new IllegalArgumentException("排序方向" + orderStr + "不是合法值");
 			}
 		}

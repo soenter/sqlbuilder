@@ -17,32 +17,9 @@ public class FieldImpl<T> implements Field<T> {
 
 	private final Class<T> javaType;
 
-	private String operator;
-
-	private T operValue;
-
-	private Field<?> operField;
-
-	private String alias;
-
-	private Class<T> asJavaType;
-
 	private String convertToJavaFieldName;
 
 	private String asName;
-
-	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType) {
-
-		if (null == tableTame || null == fieldName || null == javaType) {
-			throw new IllegalArgumentException("FieldImpl参数都不能为null");
-		}
-
-		this.tableTame = tableTame;
-		this.fieldName = fieldName;
-		this.javaType = javaType;
-
-		this.asName = FieldUtils.createAsName(tableTame, fieldName);
-	}
 
 	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, FieldNameConverter fieldNameConverter) {
 
@@ -58,44 +35,10 @@ public class FieldImpl<T> implements Field<T> {
 		this.asName = FieldUtils.createAsName(tableTame, fieldName);
 	}
 
-	@Deprecated
-	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, String operator, T operValue) {
-
-		if (null == tableTame || null == fieldName || null == javaType) {
-			throw new IllegalArgumentException("FieldImpl参数都不能为null");
-		}
-
-		this.tableTame = tableTame;
-		this.fieldName = fieldName;
-		this.javaType = javaType;
-
-		this.operator = operator;
-		this.operValue = operValue;
-
-		this.asName = FieldUtils.createAsName(tableTame, fieldName);
-	}
-
-	@Deprecated
-	protected FieldImpl (String tableTame, String fieldName, Class<T> javaType, String operator, Field<?> operField) {
-
-		if (null == tableTame || null == fieldName || null == javaType) {
-			throw new IllegalArgumentException("FieldImpl参数都不能为null");
-		}
-
-		this.tableTame = tableTame;
-		this.fieldName = fieldName;
-		this.javaType = javaType;
-
-		this.operator = operator;
-		this.operField = operField;
-
-	}
-
 
 	public Class<T> getJavaType () {
 		return javaType;
 	}
-
 
 	public String getFullName () {
 		return tableTame + "." + fieldName;
@@ -105,13 +48,9 @@ public class FieldImpl<T> implements Field<T> {
 		return asName;
 	}
 
-
-
-
 	public String getName () {
 		return fieldName;
 	}
-
 
 	public String getTableName () {
 		return tableTame;
@@ -342,32 +281,16 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 	/* (non-Javadoc)
-				 * @see java.lang.Object#toString()
-				 */
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString () {
 		return getFullName();
 	}
 
-	public String getOperator () {
-		return this.operator;
-	}
-
-	public T getOperValue () {
-		return this.operValue;
-	}
-
-	public Field<?> getOperField () {
-		return this.operField;
-	}
-
-	public boolean hasOperator () {
-		return this.operator != null && !"".equals(this.operator);
-	}
-
 	/* (non-Javadoc)
-		 * @see java.lang.Object#equals(java.lang.Object)
-		 */
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean equals (Object obj) {
@@ -428,20 +351,13 @@ public class FieldImpl<T> implements Field<T> {
 		return join(operator).ds(value);
 	}
 
-	public Field<?> as (String alias, Class<?> asJavaType) {
-		//FIXME
-		return new FieldImpl(tableTame, fieldName, javaType)
-				.cloneFrom(this)
-				.setAlias(alias)
-				.setAliasJavaType(asJavaType);
+	public Fieldable as (String alias, Class<?> asJavaType) {
+		Field<?> asField = FieldFactory.create(alias, javaType);
+		return join(" as ", asField);
 	}
 
-	public String getAlias () {
-		return alias;
-	}
-
-	public Class<T> getAliasJavaType () {
-		return asJavaType;
+	public Fieldable as (Field<T> alias) {
+		return join(" as ", alias);
 	}
 
 	public Jointer plus () {
@@ -461,21 +377,4 @@ public class FieldImpl<T> implements Field<T> {
 	}
 
 
-	private FieldImpl<?> setAlias (String alias) {
-		this.alias = alias;
-		return this;
-	}
-
-	public FieldImpl<?> setAliasJavaType (Class<T> asJavaType) {
-		this.asJavaType = asJavaType;
-		return this;
-	}
-
-	private FieldImpl<T> cloneFrom (FieldImpl<T> from) {
-		this.operator = from.operator;
-		this.operValue = from.operValue;
-		this.operField = from.operField;
-
-		return this;
-	}
 }
