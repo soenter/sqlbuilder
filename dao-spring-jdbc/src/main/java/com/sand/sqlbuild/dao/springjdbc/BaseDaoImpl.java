@@ -30,7 +30,7 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
 
-	private DatabaseType databaseType;
+	private static volatile DatabaseType databaseType;
 
 	public JdbcTemplate getJdbcTemplate () {
 		return jdbcTemplate;
@@ -373,7 +373,7 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 		return queryForPoList(result, clazz);
 	}
-	
+
 	public <R extends AbstractPo> Page<R> queryForPage(PagingBuilder builder, Class<R> clazz,Page<R> page){
 		Long count = queryForPagingCount(builder);
 		BuildResult result = null;
@@ -391,12 +391,20 @@ public class BaseDaoImpl implements BaseDao, InitializingBean {
 
 	public void afterPropertiesSet () throws Exception {
 
-		Connection connection = jdbcTemplate.getDataSource().getConnection();
-		try {
-			DatabaseMetaData metaData = connection.getMetaData();
-			databaseType = DatabaseType.fromProductName(metaData.getDatabaseProductName());
-		} finally {
-			DataSourceUtils.releaseConnection(connection, jdbcTemplate.getDataSource());
+		if(databaseType == null){
+			synchronized (BaseDaoImpl.class){
+				if(databaseType == null){
+					Connection connection = jdbcTemplate.getDataSource().getConnection();
+					try {
+						DatabaseMetaData metaData = connection.getMetaData();
+						databaseType = DatabaseType.fromProductName(metaData.getDatabaseProductName());
+
+						System.out.println("数据库类型: " + databaseType.getProductName());
+					} finally {
+						DataSourceUtils.releaseConnection(connection, jdbcTemplate.getDataSource());
+					}
+				}
+			}
 		}
 	}
 
